@@ -3,10 +3,8 @@ import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Send, Loader2, Instagram, Facebook, Twitter, Clock } from 'lucide-react';
 import contactService from '../services/contactService';
 import settingsService from '../services/settingsService';
-import { useBrand } from '../context/BrandContext';
 
 const ContactPage = () => {
-    const { brand, theme } = useBrand();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -66,8 +64,8 @@ const ContactPage = () => {
         {
             icon: Mail,
             title: "Email",
-            text: settings?.contactEmail || (theme.isTeasNTrees ? "hello@teasntrees.in" : "hello@littlehbakery.in"),
-            link: `mailto:${settings?.contactEmail || (theme.isTeasNTrees ? "hello@teasntrees.in" : "hello@littlehbakery.in")}`,
+            text: settings?.contactEmail || "hello@teasntrees.in",
+            link: `mailto:${settings?.contactEmail || "hello@teasntrees.in"}`,
             color: "text-purple-500",
             bg: "bg-purple-50"
         },
@@ -76,206 +74,41 @@ const ContactPage = () => {
             title: "Location",
             text: settings?.address || "Laxmipuram, Guntur, Andhra Pradesh",
             link: "https://goo.gl/maps/TeasNTreesLink",
-            color: "text-red-500",
-            bg: "bg-red-50"
+            color: "text-emerald-500",
+            bg: "bg-emerald-50"
         }
     ];
 
     if (isLoading) {
         return (
-            <div className={`min-h-screen pt-24 pb-20 ${theme.isLittleH ? 'bg-[#FAF1E8]' : 'bg-slate-50'} flex items-center justify-center`}>
+            <div className="min-h-screen pt-24 pb-20 bg-slate-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className={`w-10 h-10 ${theme.textColorClass} animate-spin`} />
-                </div>
-            </div>
-        );
-    }
-
-    if (theme.isLittleH) {
-        return (
-            <div className="min-h-screen pt-28 pb-20 bg-[#FAF1E8] font-sans selection:bg-[#565A47] selection:text-[#FAF1E8]">
-                <div className="container mx-auto px-4 lg:px-8">
-                    {/* Header */}
-                    <div className="text-center max-w-3xl mx-auto mb-20 border-b border-[#8B8E7B]/20 pb-12">
-                        <span className="uppercase tracking-[0.3em] text-[#8B8E7B] text-sm font-semibold mb-4 block">Inquiries & Orders</span>
-                        <h1 className="text-5xl lg:text-7xl font-playfair font-bold text-[#565A47] mb-6">Let's Connect</h1>
-                        <p className="text-[#8B8E7B] text-lg font-light leading-relaxed max-w-2xl mx-auto">
-                            Whether you're planning a wedding, placing a custom cake order, or simply have a question about our daily bake, we would be delighted to assist you.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
-
-                        {/* Elegant Form */}
-                        <div className="lg:col-span-7">
-                            {isSubmitted ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center bg-[#FDF5EC] p-12 border border-[#8B8E7B]/20">
-                                    <h2 className="text-3xl font-playfair font-bold text-[#565A47] mb-4">Message Received</h2>
-                                    <p className="text-[#8B8E7B] font-light max-w-sm mx-auto mb-8">
-                                        Thank you for your inquiry. Our artisan team will review your message and respond within 24 hours.
-                                    </p>
-                                    <button
-                                        onClick={() => setIsSubmitted(false)}
-                                        className="text-xs uppercase tracking-widest text-[#565A47] border-b border-[#565A47] pb-1 hover:text-black transition-colors"
-                                    >
-                                        Send Another Message
-                                    </button>
-                                </div>
-                            ) : (
-                                <form onSubmit={handleSubmit} className="space-y-8 bg-[#FDF5EC] p-10 lg:p-14 border border-[#8B8E7B]/10">
-                                    <h2 className="text-2xl font-playfair font-bold text-[#565A47] mb-6">Send an Inquiry</h2>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="relative group">
-                                            <input type="text" id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                className="w-full bg-transparent border-b border-[#8B8E7B]/30 py-3 text-[#565A47] focus:outline-none focus:border-[#565A47] transition-colors peer placeholder-transparent font-light" placeholder="First Name" />
-                                            <label htmlFor="firstName" className="absolute left-0 -top-3.5 text-[#8B8E7B] text-xs uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:-top-3.5 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-[#565A47]">First Name</label>
-                                        </div>
-                                        <div className="relative group">
-                                            <input type="text" id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                className="w-full bg-transparent border-b border-[#8B8E7B]/30 py-3 text-[#565A47] focus:outline-none focus:border-[#565A47] transition-colors peer placeholder-transparent font-light" placeholder="Last Name" />
-                                            <label htmlFor="lastName" className="absolute left-0 -top-3.5 text-[#8B8E7B] text-xs uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:-top-3.5 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-[#565A47]">Last Name</label>
-                                        </div>
-                                    </div>
-
-                                    <div className="relative group">
-                                        <input type="email" id="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full bg-transparent border-b border-[#8B8E7B]/30 py-3 text-[#565A47] focus:outline-none focus:border-[#565A47] transition-colors peer placeholder-transparent font-light" placeholder="Email Address" />
-                                        <label htmlFor="email" className="absolute left-0 -top-3.5 text-[#8B8E7B] text-xs uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:-top-3.5 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-[#565A47]">Email Address</label>
-                                    </div>
-
-                                    <div className="relative">
-                                        <select id="subject" required value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                            className="w-full bg-transparent border-b border-[#8B8E7B]/30 py-3 text-[#565A47] focus:outline-none focus:border-[#565A47] transition-colors appearance-none font-light">
-                                            <option value="" disabled className="text-[#8B8E7B]">Select Inquiry Type</option>
-                                            <option value="Custom Cake">Custom Cake Order</option>
-                                            <option value="Event Catering">Event Catering</option>
-                                            <option value="General Inquiry">General Question</option>
-                                        </select>
-                                        <div className="absolute right-0 top-4 pointer-events-none text-[#8B8E7B] text-xs">▼</div>
-                                    </div>
-
-                                    <div className="relative group pt-4">
-                                        <textarea id="message" required rows={4} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                            className="w-full bg-transparent border-b border-[#8B8E7B]/30 py-3 text-[#565A47] focus:outline-none focus:border-[#565A47] transition-colors peer placeholder-transparent resize-none font-light" placeholder="Message Details"></textarea>
-                                        <label htmlFor="message" className="absolute left-0 top-0 text-[#8B8E7B] text-xs uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-6 peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-0 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-widest peer-focus:text-[#565A47]">Message Details</label>
-                                    </div>
-
-                                    {error && <div className="text-red-800 text-sm font-light italic">{error}</div>}
-
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full py-4 bg-[#565A47] text-[#FAF1E8] uppercase tracking-widest text-sm font-bold hover:bg-[#3f4233] transition-colors disabled:opacity-70 flex justify-center items-center gap-3"
-                                    >
-                                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Inquiry"}
-                                    </button>
-                                </form>
-                            )}
-                        </div>
-
-                        {/* Contact Information */}
-                        <div className="lg:col-span-5 space-y-12">
-                            <div>
-                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-[#565A47] mb-8">Visit the Bakery</h3>
-                                <div className="space-y-6">
-                                    <div className="flex gap-4 items-start">
-                                        <MapPin className="w-5 h-5 text-[#8B8E7B] mt-1 shrink-0" strokeWidth={1.5} />
-                                        <div>
-                                            <div className="font-playfair text-xl text-[#565A47] mb-1">Cream N Crust</div>
-                                            <div className="font-light text-[#8B8E7B] leading-relaxed">
-                                                {settings?.address || "Laxmipuram, Guntur, Andhra Pradesh"}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                        <Phone className="w-5 h-5 text-[#8B8E7B] shrink-0" strokeWidth={1.5} />
-                                        <a href={`tel:${settings?.contactPhone?.replace(/\s/g, '') || "+917286833999"}`} className="font-light text-[#565A47] hover:text-black hover:underline transition-all">
-                                            {settings?.contactPhone || "+91 72868 33999"}
-                                        </a>
-                                    </div>
-                                    <div className="flex gap-4 items-center">
-                                        <Mail className="w-5 h-5 text-[#8B8E7B] shrink-0" strokeWidth={1.5} />
-                                        <a href={`mailto:${settings?.contactEmail || "hello@littlehbakery.in"}`} className="font-light text-[#565A47] hover:text-black hover:underline transition-all">
-                                            {settings?.contactEmail || "hello@littlehbakery.in"}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-[#565A47] mb-6">Baking Hours</h3>
-                                <ul className="space-y-4 font-light text-[#8B8E7B]">
-                                    {settings?.operatingHours ? (
-                                        (() => {
-                                            const openDay = Object.values(settings.operatingHours).find(d => d.isOpen);
-                                            return openDay ? (
-                                                <li className="flex justify-between border-b border-[#8B8E7B]/10 pb-2">
-                                                    <span>Open Daily</span>
-                                                    <span className="text-[#565A47] font-medium">{openDay.open} - {openDay.close}</span>
-                                                </li>
-                                            ) : (
-                                                <li className="text-red-800 italic">Temporarily Closed</li>
-                                            );
-                                        })()
-                                    ) : (
-                                        <li className="flex justify-between border-b border-[#8B8E7B]/10 pb-2">
-                                            <span>Open Daily</span>
-                                            <span className="text-[#565A47] font-medium">08:00 AM - 10:00 PM</span>
-                                        </li>
-                                    )}
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-[#565A47] mb-6">Follow Our Craft</h3>
-                                <div className="flex gap-6">
-                                    {['instagram', 'facebook', 'twitter'].map(platform => {
-                                        if (settings?.socialMedia?.[platform] || platform === 'instagram') {
-                                            const Icon = platform === 'instagram' ? Instagram : (platform === 'facebook' ? Facebook : Twitter);
-                                            return (
-                                                <a key={platform} href={settings?.socialMedia?.[platform] || '#'} className="text-[#8B8E7B] hover:text-[#565A47] transition-colors group">
-                                                    <div className="w-12 h-12 rounded-full border border-[#8B8E7B]/30 flex items-center justify-center group-hover:border-[#565A47] transition-colors bg-[#FDF5EC]">
-                                                        <Icon strokeWidth={1.5} className="w-5 h-5" />
-                                                    </div>
-                                                </a>
-                                            );
-                                        }
-                                        return null;
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen pt-24 pb-20 bg-slate-50">
+        <div className="min-h-screen pt-28 pb-20 bg-slate-50">
             <div className="container mx-auto px-4 lg:px-8">
-
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={`inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-6 ${theme.textColorClass} font-semibold border ${theme.primaryColorClass.replace('bg-', 'border-')}/20`}
-                    >
+                    <span className="text-emerald-600 font-bold tracking-wider uppercase text-sm mb-2 block">
                         Get in Touch
-                    </motion.div>
-                    <h1 className="text-4xl font-bold text-slate-800 mb-4">We'd Love to Hear from You</h1>
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-4">
+                        We'd Love to Hear From You
+                    </h1>
+                    <div className="w-20 h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full mx-auto mb-6" />
                     <p className="text-slate-500 text-lg">
-                        Have a question about our menu, need to book a table, or just want to say hi?
-                        Drop us a message below!
+                        Have a question about our menu, reservations, or events? Reach out and we'll be delighted to assist.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-
                     {/* Contact Info Cards */}
-                    <div className="lg:col-span-1 space-y-6">
+                    <div className="space-y-6">
                         {contactInfo.map((item, idx) => (
                             <motion.a
                                 key={idx}
@@ -299,10 +132,10 @@ const ContactPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className={`${theme.primaryColorClass.replace('bg-', 'bg-')}/5 p-8 rounded-3xl border ${theme.primaryColorClass.replace('bg-', 'border-')}/10`}
+                            className="bg-emerald-50/50 p-8 rounded-3xl border border-emerald-500/10"
                         >
                             <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                <Clock className={`w-5 h-5 ${theme.textColorClass}`} /> Opening Hours
+                                <Clock className="w-5 h-5 text-emerald-600" /> Opening Hours
                             </h3>
                             <ul className="space-y-3 mb-8">
                                 {settings?.operatingHours ? (
@@ -359,7 +192,7 @@ const ContactPage = () => {
                                 </div>
                                 <h2 className="text-3xl font-bold text-slate-800 mb-4">Message Sent!</h2>
                                 <p className="text-slate-500 max-w-sm mb-8">
-                                    Thanks for reaching out. Our team will get back to you within 24 hours.
+                                    Thanks for reaching out. Our team will get back to you shortly.
                                 </p>
                                 <button
                                     onClick={() => setIsSubmitted(false)}
@@ -379,7 +212,7 @@ const ContactPage = () => {
                                             type="text"
                                             id="firstName"
                                             required
-                                            className={`w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-${theme.primaryColor} focus:ring-2 focus:ring-${theme.primaryColor}/20 transition-all outline-none`}
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                             placeholder="John"
                                             value={formData.firstName}
                                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -391,7 +224,7 @@ const ContactPage = () => {
                                             type="text"
                                             id="lastName"
                                             required
-                                            className={`w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-${theme.primaryColor} focus:ring-2 focus:ring-${theme.primaryColor}/20 transition-all outline-none`}
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                             placeholder="Doe"
                                             value={formData.lastName}
                                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
@@ -405,7 +238,7 @@ const ContactPage = () => {
                                         type="email"
                                         id="email"
                                         required
-                                        className={`w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-${theme.primaryColor} focus:ring-2 focus:ring-${theme.primaryColor}/20 transition-all outline-none`}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -417,7 +250,7 @@ const ContactPage = () => {
                                     <select
                                         id="subject"
                                         required
-                                        className={`w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-${theme.primaryColor} focus:ring-2 focus:ring-${theme.primaryColor}/20 transition-all outline-none bg-white`}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none bg-white"
                                         value={formData.subject}
                                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                     >
@@ -437,7 +270,7 @@ const ContactPage = () => {
                                         id="message"
                                         required
                                         rows={6}
-                                        className={`w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-${theme.primaryColor} focus:ring-2 focus:ring-${theme.primaryColor}/20 transition-all outline-none resize-none`}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none resize-none"
                                         placeholder="How can we help you?"
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -481,10 +314,7 @@ const ContactPage = () => {
                     >
                         <div className="w-full h-[500px] rounded-2xl overflow-hidden relative">
                             <iframe
-                                src={theme.isTeasNTrees
-                                    ? "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3829.271512537432!2d80.4309655!3d16.309065399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a4a75d5803c1ad5%3A0x575d7ce7d4586540!2sTEAS%20N%20TREES!5e0!3m2!1sen!2sin!4v1758987737969!5m2!1sen!2sin"
-                                    : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3829.271512537432!2d80.4309655!3d16.309065399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a4a75d5803c1ad5%3A0x575d7ce7d4586540!2sLittleH%20Bakery!5e0!3m2!1sen!2sin!4v1758987737970!5m2!1sen!2sin"
-                                }
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3829.271512537432!2d80.4309655!3d16.309065399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a4a75d5803c1ad5%3A0x575d7ce7d4586540!2sTEAS%20N%20TREES!5e0!3m2!1sen!2sin!4v1758987737969!5m2!1sen!2sin"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}

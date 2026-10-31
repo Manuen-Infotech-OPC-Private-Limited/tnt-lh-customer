@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Same-origin by default: the app is served from teasntrees.in and nginx
-// proxies /api to the backend on the same box (no CORS, no mixed content).
-// Override with VITE_API_URL for local dev against a separate backend.
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+const BRAND = 'teasntrees';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -12,25 +10,17 @@ const api = axios.create({
     },
 });
 
-// Add interceptor to inject token and brand
+// Add interceptor to inject token and teasntrees brand
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Extract brand from URL path (e.g., /littleh/menu -> littleh)
-    const path = window.location.pathname;
-    const allowedBrands = ['littleh', 'teasntrees'];
-    const pathBrand = path.split('/')[1]?.toLowerCase();
+    config.headers['x-brand'] = BRAND;
 
-    const brand = allowedBrands.includes(pathBrand) ? pathBrand : 'teasntrees';
-
-    // Update baseURL dynamicly if needed or just prefix the url
-    // If the url already starts with /brand, skip. 
-    // But we want to structure it as /api/:brand/customer/...
-    if (!config.url.startsWith(`/${brand}`)) {
-        config.url = `/${brand}${config.url}`;
+    if (!config.url.startsWith(`/${BRAND}`)) {
+        config.url = `/${BRAND}${config.url}`;
     }
 
     return config;
@@ -59,18 +49,16 @@ api.interceptors.response.use((response) => {
 }, async (error) => {
     const originalRequest = error.config;
 
-    // Helper to clear auth and redirect
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/'; // Or use a cleaner navigation method if available context-less
+        window.location.href = '/';
         return Promise.reject(error);
     };
 
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
-            // If already refreshing, queue this request
             return new Promise(function (resolve, reject) {
                 failedQueue.push({ resolve, reject });
             }).then(token => {
@@ -91,8 +79,7 @@ api.interceptors.response.use((response) => {
         }
 
         try {
-            // Call refresh endpoint directly using axios to avoid interceptor loop
-            const response = await axios.post(`${API_URL}/customer/auth/refresh-token`, {
+            const response = await axios.post(`${API_URL}/teasntrees/customer/auth/refresh-token`, {
                 refreshToken: refreshToken
             });
 
@@ -100,7 +87,6 @@ api.interceptors.response.use((response) => {
                 const { accessToken, refreshToken: newRefreshToken } = response.data.data;
 
                 localStorage.setItem('token', accessToken);
-                // Also update refresh token if a new one is returned (rotation)
                 if (newRefreshToken) {
                     localStorage.setItem('refreshToken', newRefreshToken);
                 }

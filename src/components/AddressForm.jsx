@@ -254,15 +254,15 @@ const AddressForm = ({
                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
                     className={cn(
                         "w-full max-w-2xl overflow-hidden shadow-2xl rounded-[32px] border",
-                        theme.isLittleH ? "bg-bakery-bg border-bakery-accent/20" : "bg-white border-white"
+                        "bg-white border-white"
                     )}
                 >
                     <div className="p-6 flex items-center justify-between border-b border-slate-100">
                         <div className="flex items-center gap-3">
-                            <div className={cn("p-2 rounded-xl", theme.isLittleH ? "bg-bakery-accent/10 text-[#565A47]" : "bg-cafe-emerald/10 text-cafe-emerald")}>
+                            <div className={cn("p-2 rounded-xl", "bg-cafe-emerald/10 text-cafe-emerald")}>
                                 <MapPin className="w-5 h-5" />
                             </div>
-                            <h2 className={cn("text-xl font-bold text-slate-800", theme.isLittleH && "font-playfair")}>
+                            <h2 className={cn("text-xl font-bold text-slate-800", "")}>
                                 {initialData ? 'Edit Address' : 'Add New Address'}
                             </h2>
                         </div>
@@ -327,7 +327,7 @@ const AddressForm = ({
                                 <select
                                     value={formData.tag}
                                     onChange={e => setFormData({ ...formData, tag: e.target.value })}
-                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                 >
                                     <option>Home</option>
                                     <option>Work</option>
@@ -340,7 +340,7 @@ const AddressForm = ({
                                     type="text"
                                     value={formData.flatNo}
                                     onChange={e => setFormData({ ...formData, flatNo: e.target.value })}
-                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                     placeholder="e.g. A-101"
                                     required
                                 />
@@ -353,7 +353,7 @@ const AddressForm = ({
                                 type="text"
                                 value={formData.street}
                                 onChange={e => setFormData({ ...formData, street: e.target.value })}
-                                className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                 placeholder="Auto-filled from map or type here"
                                 required
                             />
@@ -366,7 +366,7 @@ const AddressForm = ({
                                     type="text"
                                     value={formData.area}
                                     onChange={e => setFormData({ ...formData, area: e.target.value })}
-                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                     required
                                 />
                             </div>
@@ -376,7 +376,7 @@ const AddressForm = ({
                                     type="text"
                                     value={formData.city}
                                     onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                     required
                                 />
                             </div>
@@ -386,7 +386,7 @@ const AddressForm = ({
                                     type="text"
                                     value={formData.pincode}
                                     onChange={e => setFormData({ ...formData, pincode: e.target.value })}
-                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                     required
                                 />
                             </div>
@@ -400,7 +400,7 @@ const AddressForm = ({
                                 onChange={e => setFormData({ ...formData, isDefault: e.target.checked })}
                                 className={cn(
                                     "w-5 h-5 rounded border-slate-300",
-                                    theme.isLittleH ? "text-[#565A47] focus:ring-[#565A47]" : "text-cafe-emerald focus:ring-cafe-emerald"
+                                    "text-cafe-emerald focus:ring-cafe-emerald"
                                 )}
                             />
                             <label htmlFor="isDefault" className="text-sm font-medium text-slate-700 cursor-pointer">
@@ -413,7 +413,7 @@ const AddressForm = ({
                             disabled={isSaving}
                             className={cn(
                                 "w-full py-4 rounded-2xl text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 mt-4",
-                                theme.isLittleH ? "bg-[#565A47] hover:bg-[#3f4233]" : "bg-cafe-emerald hover:bg-cafe-teal",
+                                "bg-cafe-emerald hover:bg-cafe-teal",
                                 isSaving && "opacity-70 cursor-not-allowed"
                             )}
                         >

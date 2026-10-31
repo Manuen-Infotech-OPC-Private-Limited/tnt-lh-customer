@@ -3,15 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, X, MessageSquareHeart, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const RatingNudge = ({ orderId, brand, theme }) => {
+const RatingNudge = ({ orderId }) => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
 
     if (!isVisible || !orderId) return null;
-
-    const isLittleH = brand === 'littleh';
-    const primaryColor = isLittleH ? '#565A47' : '#10b981';
-    const bgColor = isLittleH ? '#FAF1E8' : '#F0FDFA';
 
     return (
         <AnimatePresence>
@@ -23,7 +19,7 @@ const RatingNudge = ({ orderId, brand, theme }) => {
             >
                 <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/50 relative overflow-hidden group">
                     {/* Background Pattern */}
-                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full opacity-10 group-hover:scale-110 transition-transform duration-700" style={{ background: primaryColor }} />
+                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full opacity-10 bg-emerald-500 group-hover:scale-110 transition-transform duration-700" />
                     
                     <button 
                         onClick={() => setIsVisible(false)}
@@ -33,16 +29,16 @@ const RatingNudge = ({ orderId, brand, theme }) => {
                     </button>
 
                     <div className="flex gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0`} style={{ backgroundColor: `${primaryColor}15` }}>
-                            <MessageSquareHeart className="w-8 h-8" style={{ color: primaryColor }} />
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 bg-emerald-50 text-emerald-600">
+                            <MessageSquareHeart className="w-8 h-8" />
                         </div>
                         
                         <div className="flex-1">
-                            <h4 className={`text-lg font-bold text-slate-800 mb-1 ${isLittleH ? 'font-playfair' : ''}`}>
-                                Enjoyed your {isLittleH ? 'Bakery' : 'Tea'}?
+                            <h4 className="text-lg font-bold text-slate-800 mb-1">
+                                Enjoyed your visit?
                             </h4>
                             <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                                Your feedback helps us bake happiness better. Rate your last order!
+                                Your feedback helps us serve you better. Rate your recent order!
                             </p>
 
                             <div className="flex items-center gap-2 mb-6">
@@ -51,7 +47,7 @@ const RatingNudge = ({ orderId, brand, theme }) => {
                                         key={s}
                                         whileHover={{ scale: 1.2, rotate: 10 }}
                                         whileTap={{ scale: 0.9 }}
-                                        onClick={() => navigate(`/${brand}/track-order/${orderId}`)}
+                                        onClick={() => navigate(`/track-order/${orderId}`)}
                                         className="text-yellow-400"
                                     >
                                         <Star className="w-6 h-6 fill-yellow-400" />
@@ -60,9 +56,8 @@ const RatingNudge = ({ orderId, brand, theme }) => {
                             </div>
 
                             <button
-                                onClick={() => navigate(`/${brand}/track-order/${orderId}`)}
-                                className="w-full py-3 rounded-xl text-white font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95"
-                                style={{ background: primaryColor }}
+                                onClick={() => navigate(`/track-order/${orderId}`)}
+                                className="w-full py-3 rounded-xl text-white font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 bg-emerald-600 hover:bg-emerald-700"
                             >
                                 Share Feedback <ArrowRight className="w-4 h-4" />
                             </button>

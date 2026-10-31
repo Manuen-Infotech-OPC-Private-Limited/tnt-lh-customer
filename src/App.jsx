@@ -4,7 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
-import { BrandProvider, useBrand } from './context/BrandContext';
+import { BrandProvider } from './context/BrandContext';
 import { Toaster } from 'react-hot-toast';
 import SocketListener from './components/SocketListener';
 import Navbar from './components/Navbar';
@@ -36,46 +36,47 @@ const ScrollToTop = () => {
 };
 
 // Placeholder pages for those not yet created to prevent build errors
-const CartPage = () => <div className="pt-32 text-center text-4xl font-bold text-cafe-orange">Cart Coming Soon</div>;
+const CartPage = () => <div className="pt-32 text-center text-4xl font-bold text-emerald-600">Cart Coming Soon</div>;
 
-// Inner wrapper that reads BrandContext to set the root background
-const BrandRoot = () => {
-  const { theme } = useBrand();
+const TeasRoot = () => {
   return (
-    <div
-      className="relative min-h-screen flex flex-col font-sans antialiased text-slate-800"
-      style={theme.isLittleH ? { background: '#FAF1E8' } : {}}
-    >
+    <div className="relative min-h-screen flex flex-col font-sans antialiased text-slate-800 bg-slate-50">
       <Navbar />
       <CartDrawer />
       <main className="flex-grow">
         <Routes>
-          {/* Redirect root to a default brand or landing page if you prefer. 
-              Here we redirect / to /teasntrees */}
-          <Route path="/" element={<Navigate to="/teasntrees" replace />} />
-
-          {/* Top-level route for direct /privacy access */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/seasonal" element={<SeasonalPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/track-order/:orderId" element={<OrderTrackingPage />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
 
-          <Route path="/:brand">
-            <Route index element={<HomePage />} />
-            <Route path="menu" element={<MenuPage />} />
-            <Route path="cart" element={<CartPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="wishlist" element={<WishlistPage />} />
-            <Route path="checkout" element={<CheckoutPage />} />
-            <Route path="track-order/:orderId" element={<OrderTrackingPage />} />
-            <Route path="order-success/:orderId" element={<OrderSuccessPage />} />
-            <Route path="about" element={<AboutPage />} />
-            <Route path="gallery" element={<GalleryPage />} />
-            <Route path="reviews" element={<ReviewsPage />} />
-            <Route path="contact" element={<ContactPage />} />
-            <Route path="seasonal" element={<SeasonalPage />} />
-            <Route path="privacy" element={<PrivacyPage />} />
-          </Route>
+          {/* Backward compatibility redirects for legacy /teasntrees/* paths */}
+          <Route path="/teasntrees" element={<Navigate to="/" replace />} />
+          <Route path="/teasntrees/menu" element={<Navigate to="/menu" replace />} />
+          <Route path="/teasntrees/seasonal" element={<Navigate to="/seasonal" replace />} />
+          <Route path="/teasntrees/about" element={<Navigate to="/about" replace />} />
+          <Route path="/teasntrees/gallery" element={<Navigate to="/gallery" replace />} />
+          <Route path="/teasntrees/reviews" element={<Navigate to="/reviews" replace />} />
+          <Route path="/teasntrees/contact" element={<Navigate to="/contact" replace />} />
+          <Route path="/teasntrees/wishlist" element={<Navigate to="/wishlist" replace />} />
+          <Route path="/teasntrees/profile" element={<Navigate to="/profile" replace />} />
+          <Route path="/teasntrees/checkout" element={<Navigate to="/checkout" replace />} />
+          <Route path="/teasntrees/track-order/:orderId" element={<Navigate to="/track-order/:orderId" replace />} />
+          <Route path="/teasntrees/order-success/:orderId" element={<Navigate to="/order-success/:orderId" replace />} />
+          <Route path="/teasntrees/privacy" element={<Navigate to="/privacy" replace />} />
 
-          {/* Catch-all for legacy or invalid paths */}
-          <Route path="*" element={<Navigate to="/teasntrees" replace />} />
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />
@@ -99,7 +100,7 @@ function App() {
                 <WishlistProvider>
                   <Toaster position="top-right" />
                   <SocketListener />
-                  <BrandRoot />
+                  <TeasRoot />
                 </WishlistProvider>
               </CartProvider>
             </SocketProvider>

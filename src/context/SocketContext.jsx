@@ -22,7 +22,8 @@ export const SocketProvider = ({ children }) => {
             // Initialize Socket
             // Force 'polling' to allow traffic through the Vercel proxy
             // Connect to '/' (current origin) to use the vercel.json rewrites
-            newSocket = io('/', {
+            const socketUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL?.startsWith('http') ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '/');
+            newSocket = io(socketUrl, {
                 auth: { token, brand: activeBrand },
                 transports: ['websocket', 'polling'],
                 reconnection: true,

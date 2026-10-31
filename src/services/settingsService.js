@@ -11,4 +11,5 @@ const settingsService = {
     }
 };
 
+export { settingsService };
 export default settingsService;

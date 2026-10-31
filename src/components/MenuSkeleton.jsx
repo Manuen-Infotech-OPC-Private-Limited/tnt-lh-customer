@@ -1,14 +1,9 @@
 import React from 'react';
-import { useBrand } from '../context/BrandContext';
 import { cn } from '../lib/utils';
 
 const MenuSkeleton = () => {
-    const { theme } = useBrand();
-
-    // Shimmer effect classes
     const shimmer = "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent";
-    
-    const bgColor = theme.isLittleH ? "bg-[#8B8E7B]/10" : "bg-slate-200";
+    const bgColor = "bg-slate-200";
 
     return (
         <div className="animate-pulse">

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ShoppingCart, Plus, Minus, Sparkles, Heart } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useBrand } from '../context/BrandContext';
 
 const CustomizationModal = ({ isOpen, onClose, product, onConfirm }) => {
-    const { theme } = useBrand();
     const [selectedAddons, setSelectedAddons] = useState([]);
 
     if (!product) return null;
@@ -32,8 +30,6 @@ const CustomizationModal = ({ isOpen, onClose, product, onConfirm }) => {
         setSelectedAddons([]);
     };
 
-    const isLittleH = theme.isLittleH;
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -44,33 +40,24 @@ const CustomizationModal = ({ isOpen, onClose, product, onConfirm }) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px]"
+                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                     />
 
-                    {/* Cute Compact Modal */}
+                    {/* Compact Modal */}
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 400 }}
-                        className={cn(
-                            "relative w-full max-w-[340px] shadow-2xl overflow-hidden flex flex-col",
-                            isLittleH 
-                                ? "bg-[#FAF1E8] rounded-[32px] border-4 border-white" 
-                                : "bg-white rounded-[28px]"
-                        )}
+                        className="relative w-full max-w-[360px] shadow-2xl overflow-hidden flex flex-col bg-white rounded-3xl"
                     >
                         {/* Compact Header */}
-                        <div className="p-5 pb-2 flex justify-between items-start">
+                        <div className="p-5 pb-3 flex justify-between items-start border-b border-slate-100">
                             <div className="space-y-0.5">
-                                <h3 className={cn(
-                                    "text-lg font-black flex items-center gap-1.5",
-                                    isLittleH ? "text-[#565A47] font-playfair" : "text-slate-800"
-                                )}>
-                                    {isLittleH && <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />}
+                                <h3 className="text-lg font-black text-slate-800">
                                     Add Extras
                                 </h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
                                     {product.name}
                                 </p>
                             </div>
@@ -78,78 +65,52 @@ const CustomizationModal = ({ isOpen, onClose, product, onConfirm }) => {
                                 onClick={onClose}
                                 className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400"
                             >
-                                <X className="w-4 h-4" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Cute List */}
-                        <div className="px-4 py-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                            <div className="grid gap-2">
-                                {addons.map((addon) => {
-                                    const isSelected = selectedAddons.find(a => a.name === addon.name);
-                                    return (
-                                        <motion.div
-                                            key={addon.name}
-                                            whileTap={{ scale: 0.97 }}
-                                            onClick={() => toggleAddon(addon)}
-                                            className={cn(
-                                                "flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200 border-2",
-                                                isSelected 
-                                                    ? isLittleH 
-                                                        ? "bg-white border-[#565A47] shadow-sm" 
-                                                        : "bg-emerald-50 border-emerald-500 shadow-sm"
-                                                    : "bg-white/50 border-transparent hover:border-slate-100"
-                                            )}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className={cn(
-                                                    "w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all",
-                                                    isSelected 
-                                                        ? isLittleH ? "bg-[#565A47] border-[#565A47]" : "bg-emerald-500 border-emerald-500"
-                                                        : "bg-white border-slate-200"
-                                                )}>
-                                                    {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
-                                                </div>
-                                                <span className={cn(
-                                                    "text-xs font-bold",
-                                                    isSelected ? "text-slate-900" : "text-slate-500"
-                                                )}>
-                                                    {addon.name}
-                                                </span>
-                                            </div>
-                                            <span className={cn(
-                                                "text-[11px] font-black",
-                                                isSelected ? isLittleH ? "text-[#565A47]" : "text-emerald-600" : "text-slate-300"
+                        {/* List */}
+                        <div className="px-5 py-4 max-h-[300px] overflow-y-auto space-y-2">
+                            {addons.map((addon) => {
+                                const isSelected = selectedAddons.find(a => a.name === addon.name);
+                                return (
+                                    <motion.div
+                                        key={addon.name}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => toggleAddon(addon)}
+                                        className={cn(
+                                            "flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all duration-200 border-2",
+                                            isSelected
+                                                ? "bg-emerald-50 border-emerald-500 shadow-sm"
+                                                : "bg-slate-50 border-transparent hover:border-slate-200"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-colors",
+                                                isSelected ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-300"
                                             )}>
-                                                +₹{addon.price}
-                                            </span>
-                                        </motion.div>
-                                    );
-                                })}
-                            </div>
+                                                {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700">{addon.name}</span>
+                                        </div>
+                                        <span className="text-sm font-black text-slate-800">+₹{addon.price}</span>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
-                        {/* Cute Mini Footer */}
-                        <div className="p-4 bg-white/40 backdrop-blur-sm border-t border-white/50">
-                            <div className="flex items-center justify-between mb-4 px-1">
-                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Total</div>
-                                <div className={cn(
-                                    "text-xl font-black",
-                                    isLittleH ? "text-[#565A47]" : "text-slate-900"
-                                )}>₹{totalPrice}</div>
+                        {/* Footer */}
+                        <div className="p-5 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <span className="text-[10px] text-slate-400 uppercase font-black block">Total</span>
+                                <span className="text-xl font-black text-slate-900">₹{totalPrice}</span>
                             </div>
-                            
                             <button
                                 onClick={handleConfirm}
-                                className={cn(
-                                    "w-full py-3 rounded-xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg",
-                                    isLittleH 
-                                        ? "bg-[#565A47] text-[#FAF1E8]" 
-                                        : "bg-slate-900 text-white"
-                                )}
+                                className="px-6 py-3 rounded-2xl font-black text-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20 active:scale-95"
                             >
-                                <Plus className="w-3.5 h-3.5" />
-                                Add to Cart
+                                Add to Order
                             </button>
                         </div>
                     </motion.div>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Package, Clock, MapPin, CheckCircle, Loader2, UserCheck, CreditCard, StickyNote, Bike, ShieldCheck, FileText, XCircle } from 'lucide-react';
+import { ArrowLeft, Package, Clock, MapPin, CheckCircle, Loader2, UserCheck, CreditCard, StickyNote, Bike, ShieldCheck, FileText, XCircle, Star, MessageSquarePlus, Send } from 'lucide-react';
 import { orderService } from '../services/orderService';
+import { reviewService } from '../services/reviewService';
 import { useSocket } from '../context/SocketContext';
-import { useBrand } from '../context/BrandContext';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { cn } from '../lib/utils';
@@ -49,7 +49,6 @@ const OrderTrackingPage = () => {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const { socket } = useSocket();
-    const { brand, theme } = useBrand();
     const [order, setOrder] = useState(null);
     const [deliveryInfo, setDeliveryInfo] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -63,7 +62,6 @@ const OrderTrackingPage = () => {
             const delivery = await orderService.getDeliveryByOrder(id || orderId);
             setDeliveryInfo(delivery);
         } catch (err) {
-            // If delivery is not ready yet, just ignore
             setDeliveryInfo(null);
         }
     }, [orderId]);
@@ -99,7 +97,6 @@ const OrderTrackingPage = () => {
         const destLng = deliveryCoords[0];
         const destLat = deliveryCoords[1];
 
-        // Haversine distance helper
         const getDistKm = (lat1, lon1, lat2, lon2) => {
             const toRad = (v) => (v * Math.PI) / 180;
             const R = 6371;
@@ -115,26 +112,19 @@ const OrderTrackingPage = () => {
         const status = deliveryInfo.status || order.status;
         let totalDistanceKm = 0;
 
-        // Multi-Leg Logic:
-        // Statuses before pickup: leg 1 (Rider to Outlet) + leg 2 (Outlet to Customer)
         const isBeforePickup = ['assigned', 'pending_acceptance', 'accepted', 'heading_to_pickup', 'arrived_at_pickup'].includes(status);
 
         if (isBeforePickup && deliveryInfo.pickupLocation?.coordinates) {
             const outletLng = deliveryInfo.pickupLocation.coordinates[0];
             const outletLat = deliveryInfo.pickupLocation.coordinates[1];
 
-            // Leg 1: Rider -> Outlet
             const leg1 = getDistKm(riderLat, riderLng, outletLat, outletLng);
-            // Leg 2: Outlet -> Customer
             const leg2 = getDistKm(outletLat, outletLng, destLat, destLng);
-
             totalDistanceKm = leg1 + leg2;
         } else {
-            // After pickup: Rider -> Customer
             totalDistanceKm = getDistKm(riderLat, riderLng, destLat, destLng);
         }
 
-        // Simple average speed estimate (25 km/h)
         const avgSpeedKmh = 25;
         const minutes = Math.max(1, Math.round((totalDistanceKm / avgSpeedKmh) * 60));
         return minutes;
@@ -161,7 +151,7 @@ const OrderTrackingPage = () => {
         }
     }, [order, deliveryInfo, calculateEtaFromRider]);
 
-    // Poll rider location after pickup to keep ETA fresh
+    // Poll rider location after pickup
     useEffect(() => {
         if (!order || !DELIVERY_AWARE_STATUSES.has(order.status)) return;
 
@@ -173,17 +163,15 @@ const OrderTrackingPage = () => {
         return () => clearInterval(interval);
     }, [order, fetchDeliveryByOrder]);
 
-    // Socket Listener for Real-time Updates
+    // Socket Listener
     useEffect(() => {
         if (!socket || !orderId) return;
 
-        // Join the specific order room
         socket.emit('order:join', orderId);
 
         const handleUpdate = (data) => {
             if (data.orderId === orderId) {
-                // toast.success(`Order updated: ${data.status.replace('_', ' ')}`); // Optional: don't spam toasts
-                fetchOrder(); // Refresh full data
+                fetchOrder();
                 if (order?.status && DELIVERY_AWARE_STATUSES.has(order.status)) {
                     fetchDeliveryByOrder(orderId);
                 }
@@ -244,7 +232,7 @@ const OrderTrackingPage = () => {
     if (loading) {
         return (
             <div className="min-h-screen pt-24 flex items-center justify-center bg-slate-50">
-                <Loader2 className={`w-8 h-8 animate-spin ${theme.isLittleH ? 'text-[#565A47]' : 'text-emerald-600'}`} />
+                <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
             </div>
         );
     }
@@ -253,12 +241,11 @@ const OrderTrackingPage = () => {
         return (
             <div className="min-h-screen pt-24 flex flex-col items-center justify-center bg-slate-50 text-center px-4">
                 <p className="text-red-500 mb-4">{error || 'Order not found'}</p>
-                <button onClick={() => navigate(`/${brand || 'teasntrees'}`)} className="px-6 py-2 bg-slate-800 text-white rounded-xl">Go Home</button>
+                <button onClick={() => navigate('/')} className="px-6 py-2 bg-slate-800 text-white rounded-xl">Go Home</button>
             </div>
         );
     }
 
-    // Determine current step index based on order status
     const getStepIndex = (status) => {
         switch (status) {
             case 'pending': return 0;
@@ -281,8 +268,6 @@ const OrderTrackingPage = () => {
 
     const activeIndex = order ? getStepIndex(order.status) : 0;
 
-    // Calculate Estimated Time
-    // Priority: 1. Live rider ETA (assigned or after pickup), 2. Delivery Model Estimate, 3. Order Model Estimate, 4. Default (Created + 45m)
     let rawEstimatedTime = etaMinutes
         ? new Date(Date.now() + etaMinutes * 60000)
         : order.delivery?.estimatedTime
@@ -291,19 +276,16 @@ const OrderTrackingPage = () => {
                 ? new Date(order.estimatedDeliveryTime)
                 : new Date(new Date(order.createdAt).getTime() + 45 * 60000);
 
-    // Common Sense Safeguard: If order is active but estimate is in the past, shift it forward
     const isTerminal = ['delivered', 'cancelled'].includes(order.status);
     if (!isTerminal && rawEstimatedTime < new Date()) {
-        rawEstimatedTime = new Date(Date.now() + 15 * 60000); // Default to +15 mins from now
+        rawEstimatedTime = new Date(Date.now() + 15 * 60000);
     }
 
     const estimatedTime = rawEstimatedTime;
-
-    // Get OTP from Delivery Model (exposed by backend only when active)
     const deliveryOtp = deliveryInfo?.deliveryOtp || order.delivery?.deliveryOtp;
 
     return (
-        <div className={cn("min-h-screen pt-24 pb-12 px-4", theme.isLittleH ? "bg-[#FAF1E8]" : "bg-slate-50")}>
+        <div className="min-h-screen pt-24 pb-12 px-4 bg-slate-50">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -360,15 +342,11 @@ const OrderTrackingPage = () => {
                                 </>
                             )}
                         </div>
-                        <div className={clsx(
-                            "w-12 h-12 rounded-full flex items-center justify-center",
-                            theme.isLittleH ? "bg-[#FDF5EC] text-[#565A47]" : "bg-emerald-100 text-emerald-600"
-                        )}>
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600">
                             {order.status === 'delivered' ? <CheckCircle className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
                         </div>
                     </div>
 
-                    {/* Show OTP Card only if OTP is available (Production Ready Safe-guard) */}
                     {deliveryOtp ? (
                         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
                             <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-orange-50 to-transparent pointer-events-none" />
@@ -402,16 +380,12 @@ const OrderTrackingPage = () => {
                 {/* Timeline Card */}
                 <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 mb-6">
                     <div className="relative">
-                        {/* Vertical Line for Mobile / Horizontal for Desktop could be better but let's stick to vertical list for reliability on all screens or a simple horizontal one */}
-                        {/* Let's do a simple vertical timeline for clarity */}
                         <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-slate-100" />
 
                         <div className="space-y-8 relative">
                             {steps.map((step, index) => {
                                 const isCompleted = index <= activeIndex;
                                 const isCurrent = index === activeIndex;
-                                // If it's the current step, we show the 'Vehicle' (Bike) moving to this point
-                                // Otherwise we show the static checkpoint icon
                                 const Icon = isCurrent ? Bike : step.icon;
 
                                 return (
@@ -427,7 +401,7 @@ const OrderTrackingPage = () => {
                                             isCurrent
                                                 ? "bg-cafe-orange border-cafe-orange text-white shadow-lg shadow-orange-200 scale-110"
                                                 : isCompleted
-                                                    ? (theme.isLittleH ? "bg-white border-[#565A47] text-[#565A47]" : "bg-white border-emerald-500 text-emerald-600")
+                                                    ? "bg-white border-emerald-500 text-emerald-600"
                                                     : "bg-white border-slate-200 text-slate-300"
                                         )}>
                                             <Icon className={clsx("w-5 h-5", isCurrent && "animate-pulse")} />
@@ -437,7 +411,7 @@ const OrderTrackingPage = () => {
                                                 {step.label}
                                             </p>
                                             {isCurrent && (
-                                                <p className={`text-sm ${theme.isLittleH ? 'text-[#8B8E7B]' : 'text-emerald-600'} font-medium`}>
+                                                <p className="text-sm text-emerald-600 font-medium">
                                                     {index === steps.length - 1 ? 'Successfully Delivered' :
                                                         index === 3 ? 'Searching for nearby riders...' :
                                                             index < 3 ? 'Processing your order...' : 'Rider is on the way'}
@@ -455,7 +429,7 @@ const OrderTrackingPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                         <h2 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <MapPin className={`w-5 h-5 ${theme.isLittleH ? 'text-[#565A47]' : 'text-emerald-600'}`} /> Delivery Address
+                            <MapPin className="w-5 h-5 text-emerald-600" /> Delivery Address
                         </h2>
                         <p className="text-slate-600 text-sm leading-relaxed">
                             {order.deliveryAddress?.address || "No address provided"}
@@ -470,7 +444,7 @@ const OrderTrackingPage = () => {
 
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                         <h2 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <CreditCard className={`w-5 h-5 ${theme.isLittleH ? 'text-[#565A47]' : 'text-emerald-600'}`} /> Payment Info
+                            <CreditCard className="w-5 h-5 text-emerald-600" /> Payment Info
                         </h2>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-slate-500 text-sm">Method</span>
@@ -480,7 +454,7 @@ const OrderTrackingPage = () => {
                             <span className="text-slate-500 text-sm">Status</span>
                             <span className={clsx(
                                 "px-2 py-1 rounded-lg text-xs font-bold",
-                                order.paymentStatus === 'paid' ? (theme.isLittleH ? "bg-[#FDF5EC] text-[#565A47]" : "bg-emerald-100 text-emerald-700") : "bg-orange-100 text-orange-700"
+                                order.paymentStatus === 'paid' ? "bg-emerald-100 text-emerald-700" : "bg-orange-100 text-orange-700"
                             )}>
                                 {order.paymentStatus?.toUpperCase() || 'PENDING'}
                             </span>
@@ -525,10 +499,10 @@ const OrderTrackingPage = () => {
                                 <span className="font-black text-emerald-600">-₹{order.discount}</span>
                             </div>
                         )}
-                        <div className={`pt-4 border-t border-slate-100 flex justify-between items-end`}>
+                        <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Paid Amount</p>
-                                <span className={`text-3xl font-black ${theme.isLittleH ? 'text-[#565A47]' : 'text-emerald-600'} tracking-tighter`}>₹{order.total}</span>
+                                <span className="text-3xl font-black text-emerald-600 tracking-tighter">₹{order.total}</span>
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Payment Method</p>
@@ -538,29 +512,28 @@ const OrderTrackingPage = () => {
                     </div>
                 </div>
 
-                {/* PREMIUM RATING SECTION */}
+                {/* Rating Section */}
                 {order.status === 'delivered' && !order.foodRating && (
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-white relative overflow-hidden group"
                     >
-                        {/* Decorative Background */}
-                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full opacity-5 group-hover:scale-110 transition-transform duration-1000" style={{ background: theme.isLittleH ? '#565A47' : '#10b981' }} />
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full opacity-5 group-hover:scale-110 transition-transform duration-1000 bg-emerald-500" />
                         
                         <div className="relative z-10 text-center max-w-lg mx-auto">
-                            <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-6 transition-transform`} style={{ background: theme.isLittleH ? '#FDF5EC' : '#F0FDFA' }}>
-                                <MessageSquarePlus className={`w-10 h-10 ${theme.isLittleH ? 'text-[#565A47]' : 'text-emerald-600'}`} />
+                            <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-6 transition-transform bg-emerald-50">
+                                <MessageSquarePlus className="w-10 h-10 text-emerald-600" />
                             </div>
                             
-                            <h2 className={`text-3xl font-black text-slate-800 mb-3 ${theme.isLittleH ? 'font-playfair' : ''}`}>
-                                How was your {theme.isLittleH ? 'Bakery' : 'Tea'}?
+                            <h2 className="text-3xl font-black text-slate-800 mb-3">
+                                How was your meal?
                             </h2>
                             <p className="text-slate-500 mb-8 font-medium">
                                 We'd love to hear your thoughts on the quality of food and our delivery service!
                             </p>
 
-                            <RatingForm orderId={orderId} brand={brand} theme={theme} onComplete={fetchOrder} />
+                            <RatingForm orderId={orderId} onComplete={fetchOrder} />
                         </div>
                     </motion.div>
                 )}
@@ -569,11 +542,7 @@ const OrderTrackingPage = () => {
     );
 };
 
-// Extracted Rating Form for better state management
-import { reviewService } from '../services/reviewService';
-import { Star, MessageSquarePlus, Send } from 'lucide-react';
-
-const RatingForm = ({ orderId, brand, theme, onComplete }) => {
+const RatingForm = ({ orderId, onComplete }) => {
     const [foodRating, setFoodRating] = useState(0);
     const [riderRating, setRiderRating] = useState(0);
     const [review, setReview] = useState('');
@@ -589,9 +558,9 @@ const RatingForm = ({ orderId, brand, theme, onComplete }) => {
         try {
             await reviewService.createReview({
                 orderId,
-                brand,
+                brand: 'teasntrees',
                 foodRating,
-                riderRating: riderRating || foodRating, // fallback
+                riderRating: riderRating || foodRating,
                 review,
                 type: 'order'
             });
@@ -663,8 +632,7 @@ const RatingForm = ({ orderId, brand, theme, onComplete }) => {
             <button
                 type="submit"
                 disabled={isSubmitting || foodRating === 0}
-                className="w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl disabled:opacity-50"
-                style={{ background: theme.isLittleH ? '#565A47' : '#10b981' }}
+                className="w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl disabled:opacity-50 bg-emerald-600 hover:bg-emerald-700"
             >
                 {isSubmitting ? "Sending..." : "Submit My Review"} <Send className="w-5 h-5" />
             </button>

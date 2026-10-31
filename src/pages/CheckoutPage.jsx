@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useBrand } from '../context/BrandContext';
 import AddressModal from '../components/AddressModal';
 import { cn } from '../lib/utils';
 import { userService } from '../services/userService';
@@ -11,15 +9,14 @@ import { orderService } from '../services/orderService';
 import { cartService } from '../services/cartService';
 import settingsService from '../services/settingsService';
 import {
-    ArrowLeft, MapPin, Loader2, CheckCircle2, AlertCircle, ShoppingBag,
-    ChevronLeft, Plus, CreditCard, ArrowRight, X, Navigation, Save, CheckCircle, Ticket, Tag
+    ChevronLeft, Plus, CreditCard, ArrowRight, X, CheckCircle, Ticket, Tag,
+    ShoppingBag, AlertCircle, CheckCircle2, Loader2
 } from 'lucide-react';
 import clsx from 'clsx';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const { brand, theme } = useBrand();
     const { cartItems, cartTotal, clearCart, checkout } = useCart();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -34,12 +31,11 @@ const CheckoutPage = () => {
 
     // Address Modal State
     const [showAddressModal, setShowAddressModal] = useState(false);
-    const [savingAddress, setSavingAddress] = useState(false);
 
     // Initial Data Fetch
     useEffect(() => {
         if (!isAuthenticated) {
-            navigate(`/${brand}/profile`);
+            navigate('/profile');
             return;
         }
 
@@ -51,7 +47,6 @@ const CheckoutPage = () => {
                 ]);
 
                 setAddresses(addrData || []);
-                // Auto-select default
                 const defaultAddr = addrData?.find(a => a.isDefault) || addrData?.[0];
                 if (defaultAddr) setSelectedAddress(defaultAddr._id);
 
@@ -69,7 +64,6 @@ const CheckoutPage = () => {
     // Handle Razorpay Payment
     const handleRazorpayPayment = async (orderId, amount) => {
         try {
-            // 1. Create Razorpay order on backend
             const rzpOrderResponse = await orderService.createRazorpayOrder({
                 amount,
                 orderId
@@ -81,18 +75,16 @@ const CheckoutPage = () => {
 
             const { id: rzpOrderId, key: rzpKey } = rzpOrderResponse.data;
 
-            // 2. Open Razorpay Checkout
             const options = {
                 key: rzpKey,
                 amount: Math.round(amount * 100),
                 currency: "INR",
-                name: theme.isLittleH ? "LittleH Bakery" : "Teas N Trees",
+                name: "Teas N Trees",
                 description: `Order #${orderId}`,
                 order_id: rzpOrderId,
                 handler: async function (response) {
                     try {
                         setLoading(true);
-                        // 3. Verify payment on backend
                         const verificationData = {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
@@ -103,7 +95,7 @@ const CheckoutPage = () => {
                         const verifyRes = await orderService.verifyRazorpayPayment(verificationData);
 
                         if (verifyRes.success) {
-                            navigate(`/${brand}/order-success/${orderId}`);
+                            navigate(`/order-success/${orderId}`);
                         } else {
                             setError("Payment verification failed. Please contact support.");
                             alert("Payment verification failed. Your order status might be pending.");
@@ -116,19 +108,18 @@ const CheckoutPage = () => {
                     }
                 },
                 prefill: {
-                    name: "", // Can be filled if user name available
+                    name: "",
                     email: "",
                     contact: ""
                 },
                 theme: {
-                    color: theme.primaryColorClass === 'bg-pink-500' ? '#ec4899' : '#10b981' // cafe-emerald or pink
+                    color: '#10b981'
                 },
                 modal: {
                     ondismiss: function () {
                         setLoading(false);
                         setError("Payment cancelled by user. You can pay later from your order history.");
-                        // Optional: Navigate to orders page or stay on checkout
-                        setTimeout(() => navigate(`/${brand}/track-order/${orderId}`), 2000);
+                        setTimeout(() => navigate(`/track-order/${orderId}`), 2000);
                     }
                 }
             };
@@ -140,9 +131,8 @@ const CheckoutPage = () => {
             console.error("Razorpay Error:", err);
             setError(err.message || "Failed to initialize payment.");
             setLoading(false);
-            // Even if payment init fails, the order is already created as pending
             if (orderId) {
-                setTimeout(() => navigate(`/${brand}/track-order/${orderId}`), 2000);
+                setTimeout(() => navigate(`/track-order/${orderId}`), 2000);
             }
         }
     };
@@ -158,7 +148,7 @@ const CheckoutPage = () => {
             const response = await cartService.validateCoupon(
                 couponCode.trim().toUpperCase(),
                 cartTotal,
-                brand
+                'teasntrees'
             );
 
             if (response.success) {
@@ -213,11 +203,9 @@ const CheckoutPage = () => {
                 const orderId = response.data?.orderId || response.data?.data?.orderId || response.data?._id;
 
                 if (paymentMethod === 'Online') {
-                    // Start Razorpay Flow
                     await handleRazorpayPayment(orderId, parseFloat(calculatedGrandTotal));
                 } else {
-                    // COD success
-                    navigate(`/${brand}/order-success/${orderId}`);
+                    navigate(`/order-success/${orderId}`);
                 }
             } else {
                 const msg = response.message || 'Failed to place order';
@@ -234,124 +222,9 @@ const CheckoutPage = () => {
         }
     };
 
-    // Handle Use My Location
-    const handleUseMyLocation = () => {
-        if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser");
-            return;
-        }
-
-        setFetchingLocation(true);
-
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        };
-
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
-
-            try {
-                const res = await userService.reverseGeocode(latitude, longitude);
-
-                if (res.success && res.data) {
-                    const { details, formattedAddress } = res.data;
-                    const parts = formattedAddress ? formattedAddress.split(',').map(p => p.trim()) : [];
-
-                    // 1. Street: Prefer detailed road, else fallback to first part of formatted address
-                    let street = details?.road || details?.street || details?.pedestrian || parts[0] || '';
-
-                    // 2. Area: Prefer detailed suburb, else fallback to second part
-                    let area = details?.suburb || details?.neighbourhood || details?.residential || details?.hamlet || '';
-                    if (!area && parts.length > 1) {
-                        // Avoid setting city as area
-                        if (parts[1] !== details?.city && parts[1] !== details?.postcode) {
-                            area = parts[1];
-                        }
-                    }
-
-                    // 3. City
-                    let city = details?.city || details?.town || details?.municipality || details?.state_district || '';
-                    if (!city && parts.length > 2) city = parts[parts.length - 3]; // Rough guess
-
-                    let pincode = details?.postcode || '';
-
-                    // --- SMART CORRECTION (Hotfix for OSM data discrepancies) ---
-                    const fullString = (formattedAddress || '').toLowerCase();
-                    if (fullString.includes('guntur')) {
-                        if (fullString.includes('ashok nagar') || fullString.includes('brodipet') || fullString.includes('lakshmipuram')) {
-                            pincode = '522002';
-                        }
-                    }
-                    // -----------------------------------------------------------
-
-                    setNewAddress(prev => ({
-                        ...prev,
-                        flatNo: '', // GPS usually can't get this
-                        street: street,
-                        area: area,
-                        city: city,
-                        pincode: pincode,
-                        location: { type: 'Point', coordinates: [longitude, latitude] } // Store GPS
-                    }));
-
-                    // Prompt user for Flat No as it is the only missing piece usually
-                    setTimeout(() => {
-                        const flatInput = document.getElementById('flatNo');
-                        if (flatInput) flatInput.focus();
-                        alert("📍 Location Fetched!\n\nPlease enter your Flat / House Number manually.");
-                    }, 500);
-                }
-            } catch (err) {
-                console.error("Reverse geocoding failed", err);
-                alert("Could not fetch address details. Please fill manually.");
-            } finally {
-                setFetchingLocation(false);
-            }
-        }, (err) => {
-            console.error("Geolocation error", err);
-            let msg = "Unable to retrieve location.";
-            if (err.code === 1) msg = "Location permission denied.";
-            else if (err.code === 2) msg = "Location unavailable.";
-            else if (err.code === 3) msg = "Location request timed out.";
-            alert(msg);
-            setFetchingLocation(false);
-        }, options);
-    };
-
-    const handleSaveAddress = async (e) => {
-        e.preventDefault();
-        setSavingAddress(true);
-        try {
-            const payload = {
-                label: newAddress.tag,
-                addressLine: `${newAddress.flatNo}, ${newAddress.street}, ${newAddress.area}, ${newAddress.city} - ${newAddress.pincode}`,
-                isDefault: addresses.length === 0,
-                location: newAddress.location || { type: 'Point', coordinates: [0, 0] } // Include location in payload
-            };
-            await userService.addAddress(payload);
-            const updatedAddrs = await userService.getAddresses();
-            setAddresses(updatedAddrs || []);
-
-            // Auto select new address
-            if (updatedAddrs && updatedAddrs.length > 0) {
-                const latest = updatedAddrs[updatedAddrs.length - 1];
-                setSelectedAddress(latest._id);
-            }
-
-            setShowAddressModal(false);
-            setNewAddress({ tag: 'Home', flatNo: '', street: '', area: '', city: '', pincode: '' });
-        } catch (err) {
-            console.error("Failed to save address", err);
-        } finally {
-            setSavingAddress(false);
-        }
-    };
-
     if (cartItems.length === 0 && !isRedirecting) {
         return (
-            <div className={cn("min-h-screen pt-24 pb-20 flex items-center justify-center p-4", theme.isLittleH ? "bg-bakery-bg" : "bg-slate-50")}>
+            <div className="min-h-screen pt-24 pb-20 flex items-center justify-center p-4 bg-slate-50">
                 <div className="text-center">
                     <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-400">
                         <ShoppingBag className="w-10 h-10" />
@@ -359,8 +232,8 @@ const CheckoutPage = () => {
                     <h2 className="text-2xl font-bold text-slate-800 mb-2">Your Cart is Empty</h2>
                     <p className="text-slate-500 mb-8">Add some delicious items to checkout.</p>
                     <button
-                        onClick={() => navigate(`/${brand}/menu`)}
-                        className={`px-8 py-3 ${theme.isLittleH ? 'bg-[#565A47] text-[#FAF1E8]' : `bg-gradient-to-r ${theme.gradientClass} text-white`} rounded-xl font-bold hover:shadow-xl active:scale-95 flex items-center gap-2 transition-all shadow-lg mx-auto`}
+                        onClick={() => navigate('/menu')}
+                        className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white rounded-xl font-bold hover:shadow-xl active:scale-95 flex items-center gap-2 transition-all shadow-lg mx-auto"
                     >
                         Browse Menu
                     </button>
@@ -375,14 +248,14 @@ const CheckoutPage = () => {
     const calculatedGrandTotal = (cartTotal + tax + deliveryFee - discount).toFixed(2);
 
     return (
-        <div className={cn("min-h-screen pt-24 pb-20 transition-colors duration-300", theme.isLittleH ? "bg-bakery-bg" : "bg-slate-50")}>
+        <div className="min-h-screen pt-24 pb-20 bg-slate-50">
             <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
 
                 <div className="flex items-center gap-4 mb-8">
                     <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors">
                         <ChevronLeft className="w-6 h-6 text-slate-600" />
                     </button>
-                    <h1 className={cn("text-2xl font-bold text-slate-800", theme.isLittleH && "font-playfair")}>Checkout</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">Checkout</h1>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
@@ -391,10 +264,10 @@ const CheckoutPage = () => {
                     <div className="flex-1 space-y-6">
 
                         {/* Address Section */}
-                        <div className={cn("rounded-3xl p-6 shadow-sm border", theme.isLittleH ? "bg-bakery-light border-bakery-accent/20" : "bg-white border-slate-100")}>
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                             <div className="flex items-center justify-between mb-6">
-                                <h2 className={cn("text-xl font-bold text-slate-800 flex items-center gap-3", theme.isLittleH && "font-playfair")}>
-                                    <span className={`w-8 h-8 rounded-full ${theme.primaryColorClass} text-white flex items-center justify-center text-sm font-bold shadow-md`}>1</span>
+                                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-md">1</span>
                                     Delivery Address
                                 </h2>
                             </div>
@@ -407,8 +280,8 @@ const CheckoutPage = () => {
                                         className={cn(
                                             "cursor-pointer rounded-2xl p-5 border-2 transition-all relative",
                                             selectedAddress === addr._id
-                                                ? (theme.isLittleH ? "border-[#565A47] bg-[#FDF5EC]" : `border-${theme.primaryColor} bg-${theme.primaryColor}/5`)
-                                                : (theme.isLittleH ? "border-bakery-accent/10 hover:border-bakery-primary/30" : "border-slate-100 hover:border-slate-200")
+                                                ? "border-emerald-600 bg-emerald-50/50"
+                                                : "border-slate-100 hover:border-slate-200"
                                         )}
                                     >
                                         <div className="flex items-start justify-between">
@@ -419,7 +292,7 @@ const CheckoutPage = () => {
                                                 </p>
                                             </div>
                                             {selectedAddress === addr._id && (
-                                                <CheckCircle className={`w-6 h-6 ${theme.textColorClass} flex-shrink-0`} />
+                                                <CheckCircle className="w-6 h-6 text-emerald-600 flex-shrink-0" />
                                             )}
                                         </div>
                                     </div>
@@ -427,7 +300,7 @@ const CheckoutPage = () => {
 
                                 <button
                                     onClick={() => setShowAddressModal(true)}
-                                    className={`border-2 border-dashed border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-400 ${theme.isLittleH ? 'hover:border-[#565A47] hover:text-[#565A47] hover:bg-[#565A47]/5' : `hover:border-${theme.primaryColor} ${theme.textColorClass.replace('text-', 'hover:text-')} ${theme.primaryColorClass.replace('bg-', 'hover:bg-')}/5`} transition-all min-h-[120px]`}
+                                    className="border-2 border-dashed border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-400 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all min-h-[120px]"
                                 >
                                     <Plus className="w-6 h-6 mb-2" />
                                     <span className="font-bold text-sm">Add New Address</span>
@@ -436,43 +309,43 @@ const CheckoutPage = () => {
                         </div>
 
                         {/* Payment Section */}
-                        <div className={cn("rounded-3xl p-6 shadow-sm border", theme.isLittleH ? "bg-bakery-light border-bakery-accent/20" : "bg-white border-slate-100")}>
-                            <h2 className={cn("text-xl font-bold text-slate-800 flex items-center gap-3 mb-6", theme.isLittleH && "font-playfair")}>
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3 mb-6">
                                 <span className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm font-bold shadow-md">2</span>
                                 Payment Method
                             </h2>
 
                             <div className="space-y-3">
-                                <label className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'COD' ? `border-${theme.primaryColor} bg-${theme.primaryColor}/5` : 'border-slate-100 hover:border-slate-200'}`}>
+                                <label className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-100 hover:border-slate-200'}`}>
                                     <input
                                         type="radio"
                                         name="payment"
                                         value="COD"
                                         checked={paymentMethod === 'COD'}
                                         onChange={() => setPaymentMethod('COD')}
-                                        className={`w-5 h-5 ${theme.textColorClass} focus:ring-${theme.primaryColor}`}
+                                        className="w-5 h-5 text-emerald-600 focus:ring-emerald-500"
                                     />
                                     <div className="flex-1">
                                         <div className="font-bold text-slate-800">Cash on Delivery</div>
                                         <div className="text-xs text-slate-500">Pay lightly when you receive your order</div>
                                     </div>
-                                    <CreditCard className={clsx("w-6 h-6", paymentMethod === 'COD' ? theme.textColorClass : "text-slate-300")} />
+                                    <CreditCard className={clsx("w-6 h-6", paymentMethod === 'COD' ? "text-emerald-600" : "text-slate-300")} />
                                 </label>
 
-                                <label className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'Online' ? `border-${theme.primaryColor} bg-${theme.primaryColor}/5` : 'border-slate-100 hover:border-slate-200'}`}>
+                                <label className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'Online' ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-100 hover:border-slate-200'}`}>
                                     <input
                                         type="radio"
                                         name="payment"
                                         value="Online"
                                         checked={paymentMethod === 'Online'}
                                         onChange={() => setPaymentMethod('Online')}
-                                        className={`w-5 h-5 ${theme.textColorClass} focus:ring-${theme.primaryColor}`}
+                                        className="w-5 h-5 text-emerald-600 focus:ring-emerald-500"
                                     />
                                     <div className="flex-1">
                                         <div className="font-bold text-slate-800">Online Payment</div>
                                         <div className="text-xs text-slate-500">UPI, Cards, Netbanking</div>
                                     </div>
-                                    <CheckCircle2 className={clsx("w-6 h-6", paymentMethod === 'Online' ? theme.textColorClass : "text-slate-300")} />
+                                    <CheckCircle2 className={clsx("w-6 h-6", paymentMethod === 'Online' ? "text-emerald-600" : "text-slate-300")} />
                                 </label>
                             </div>
                         </div>
@@ -480,8 +353,8 @@ const CheckoutPage = () => {
 
                     {/* Right Column: Order Summary */}
                     <div className="lg:w-96 flex-shrink-0">
-                        <div className={cn("rounded-3xl p-6 shadow-sm border sticky top-24", theme.isLittleH ? "bg-bakery-light border-bakery-accent/20" : "bg-white border-slate-100")}>
-                            <h2 className={cn("text-xl font-bold text-slate-800 mb-6", theme.isLittleH && "font-playfair")}>Order Summary</h2>
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 sticky top-24">
+                            <h2 className="text-xl font-bold text-slate-800 mb-6">Order Summary</h2>
 
                             {error && (
                                 <div className="mb-4 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
@@ -491,7 +364,7 @@ const CheckoutPage = () => {
                                         <button
                                             onClick={() => {
                                                 clearCart();
-                                                navigate(`/${brand}/menu`);
+                                                navigate('/menu');
                                             }}
                                             className="mt-3 w-full py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-semibold transition-colors"
                                         >
@@ -532,20 +405,14 @@ const CheckoutPage = () => {
                                                 value={couponCode}
                                                 onChange={(e) => setCouponCode(e.target.value)}
                                                 placeholder="Enter Coupon Code"
-                                                className={cn(
-                                                    "w-full pl-9 pr-4 py-2.5 rounded-xl border-none text-sm focus:ring-1 focus:ring-slate-200",
-                                                    theme.isLittleH ? "bg-[#FDF5EC]" : "bg-slate-50"
-                                                )}
+                                                className="w-full pl-9 pr-4 py-2.5 rounded-xl border-none text-sm focus:ring-1 focus:ring-slate-200 bg-slate-50"
                                             />
                                         </div>
                                         <button
                                             onClick={handleApplyCoupon}
                                             disabled={isValidatingCoupon || !couponCode.trim()}
                                             className={cn(
-                                                "px-4 py-2 rounded-xl font-bold text-xs transition-all",
-                                                theme.isLittleH 
-                                                    ? "bg-[#565A47] text-[#FAF1E8] hover:bg-[#3f4233]" 
-                                                    : "bg-cafe-emerald text-white hover:bg-cafe-teal",
+                                                "px-4 py-2 rounded-xl font-bold text-xs transition-all bg-emerald-600 text-white hover:bg-emerald-700",
                                                 (isValidatingCoupon || !couponCode.trim()) && "opacity-50"
                                             )}
                                         >
@@ -553,12 +420,9 @@ const CheckoutPage = () => {
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className={cn(
-                                        "flex items-center justify-between p-3 rounded-xl border border-dashed",
-                                        theme.isLittleH ? "border-[#565A47]/30 bg-[#565A47]/5" : "border-cafe-emerald/30 bg-cafe-emerald/5"
-                                    )}>
+                                    <div className="flex items-center justify-between p-3 rounded-xl border border-dashed border-emerald-500/30 bg-emerald-50/50">
                                         <div className="flex items-center gap-2">
-                                            <Ticket className={cn("w-5 h-5", theme.isLittleH ? "text-[#565A47]" : "text-cafe-emerald")} />
+                                            <Ticket className="w-5 h-5 text-emerald-600" />
                                             <div>
                                                 <div className="text-xs font-bold text-slate-800">{couponInfo.couponCode}</div>
                                                 <div className="text-[10px] text-slate-500">₹{couponInfo.discountAmount} discount applied</div>
@@ -590,7 +454,7 @@ const CheckoutPage = () => {
                                     <span>₹{tax.toFixed(2)}</span>
                                 </div>
                                 {couponInfo && (
-                                    <div className="flex justify-between text-sm font-bold text-cafe-emerald">
+                                    <div className="flex justify-between text-sm font-bold text-emerald-600">
                                         <span>Coupon Discount</span>
                                         <span>-₹{couponInfo.discountAmount}</span>
                                     </div>
@@ -611,7 +475,7 @@ const CheckoutPage = () => {
                             <button
                                 onClick={handlePlaceOrder}
                                 disabled={loading}
-                                className={`w-full py-4 ${theme.isLittleH ? 'bg-[#565A47] text-[#FAF1E8] shadow-[#565A47]/30 hover:bg-[#3f4233]' : 'bg-cafe-emerald text-white shadow-cafe-emerald/30 hover:bg-cafe-teal'} rounded-xl font-bold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2`}
+                                className="w-full py-4 bg-emerald-600 text-white shadow-emerald-600/30 hover:bg-emerald-700 rounded-xl font-bold shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                             >
                                 {loading ? 'Placing Order...' : <>Place Order <ArrowRight className="w-5 h-5" /></>}
                             </button>

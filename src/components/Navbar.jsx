@@ -1,86 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Menu, X, Coffee, Users, ZoomIn, Star, Phone, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useBrand } from '../context/BrandContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { productService } from '../services/productService';
 import Logo from '../assets/logoteasntrees-removebg-preview.png';
-import LittleHLogo from '../assets/cream-n-crust-logo.png';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { cartCount, toggleCart } = useCart();
     const { wishlistItems } = useWishlist();
-    const { brand, setBrand, theme, isLittleHActive } = useBrand();
     const navigate = useNavigate();
-    const location = useLocation();
     const queryClient = useQueryClient();
 
     const prefetchMenu = () => {
-        // Prefetch categories
         queryClient.prefetchQuery({
-            queryKey: ['categories', brand],
-            queryFn: () => productService.getCategories(brand),
+            queryKey: ['categories', 'teasntrees'],
+            queryFn: () => productService.getCategories('teasntrees'),
             staleTime: 1000 * 60 * 5,
         });
 
-        // Prefetch products for 'all' category
         queryClient.prefetchQuery({
-            queryKey: ['products', 'all', '', '', brand],
+            queryKey: ['products', 'all', '', '', 'teasntrees'],
             queryFn: () => productService.getAllProducts({
                 category: 'all',
                 q: '',
                 search: '',
-                brand: brand
+                brand: 'teasntrees'
             }),
             staleTime: 1000 * 60 * 5,
         });
     };
 
     return (
-
-        <nav className={cn("fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b", theme.isLittleH ? "bg-[#FAF1E8] border-[#8B8E7B]/15" : "glass-nav border-transparent")}>
+        <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b glass-nav border-transparent">
             <div className="container mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     {/* Logo */}
-                    <Link to={theme.isLittleH ? "/littleh" : "/teasntrees"} className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
+                    <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
                         <img
-                            src={theme.isLittleH ? LittleHLogo : Logo}
-                            alt={theme.brandName}
-                            className={cn(
-                                "w-auto object-contain transition-transform group-hover:scale-105 duration-300",
-                                "h-10 md:h-14"
-                            )}
+                            src={Logo}
+                            alt="Teas N Trees"
+                            className="w-auto object-contain transition-transform group-hover:scale-105 duration-300 h-10 md:h-14"
                         />
                     </Link>
-
-                    {/* Brand Switcher Desktop - Only shown when Little H is active */}
-                    {isLittleHActive && (
-                        <div className={cn("hidden lg:flex p-1 rounded-full items-center border transition-colors", theme.isLittleH ? "bg-bakery-light border-bakery-accent/20" : "bg-white/50 backdrop-blur-md border-white/60")}>
-                            <button
-                                onClick={() => { setBrand('teasntrees'); navigate('/teasntrees'); }}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-full text-sm font-bold transition-all",
-                                    theme.isTeasNTrees ? "bg-cafe-emerald text-white shadow-md shadow-cafe-emerald/30" : "text-slate-500 hover:text-slate-800"
-                                )}
-                            >
-                                Teas N Trees
-                            </button>
-                            <button
-                                onClick={() => { setBrand('littleh'); navigate('/littleh'); }}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-full text-sm font-bold transition-all",
-                                    theme.isLittleH ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" : "text-slate-500 hover:text-slate-800"
-                                )}
-                            >
-                                Cream N Crust
-                            </button>
-                        </div>
-                    )}
                 </div>
 
                 {/* Center Spacer */}
@@ -89,23 +55,25 @@ const Navbar = () => {
                 {/* Desktop Actions */}
                 <div className="hidden lg:flex items-center gap-6">
                     <Link 
-                        to={`/${brand}/menu`} 
+                        to="/menu" 
                         onMouseEnter={prefetchMenu}
-                        className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`}
+                        className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors"
                     >
                         Menu
                     </Link>
-                    {theme.isTeasNTrees && (
-                        <Link to={`/${brand}/seasonal`} className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors animate-pulse-slow`}>
-                            Seasonal
-                        </Link>
-                    )}
-                    <Link to={`/${brand}/about`} className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`}>About</Link>
-                    <Link to={`/${brand}/gallery`} className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`}>Gallery</Link>
-                    <Link to={`/${brand}/reviews`} className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`}>Reviews</Link>
-                    <Link to={`/${brand}/contact`} className={`text-sm font-medium ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`}>Contact</Link>
+                    <Link 
+                        to="/seasonal" 
+                        className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors animate-pulse-slow flex items-center gap-1.5"
+                    >
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        Seasonal
+                    </Link>
+                    <Link to="/about" className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors">About</Link>
+                    <Link to="/gallery" className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors">Gallery</Link>
+                    <Link to="/reviews" className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors">Reviews</Link>
+                    <Link to="/contact" className="text-sm font-medium text-slate-700 hover:text-cafe-emerald transition-colors">Contact</Link>
 
-                    <Link to={`/${brand}/wishlist`} className="relative group">
+                    <Link to="/wishlist" className="relative group">
                         <div className={cn(
                             "absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md transition-transform",
                             wishlistItems.length > 0 ? "scale-100" : "scale-0"
@@ -122,13 +90,13 @@ const Navbar = () => {
                         )}>
                             {cartCount}
                         </div>
-                        <ShoppingCart className={`w-6 h-6 text-slate-600 ${theme.textColorClass.replace('text-', 'hover:text-')} transition-colors`} />
+                        <ShoppingCart className="w-6 h-6 text-slate-600 group-hover:text-cafe-emerald transition-colors" />
                     </button>
 
-                    <Link to={`/${brand}/profile`} className="flex items-center gap-2 pl-4 border-l border-slate-200">
-                        <div className={`w-9 h-9 rounded-full bg-gradient-to-tr ${theme.gradientClass} p-[2px]`}>
+                    <Link to="/profile" className="flex items-center gap-2 pl-4 border-l border-slate-200">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cafe-emerald to-cafe-teal p-[2px]">
                             <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                <User className={`w-5 h-5 ${theme.textColorClass}`} />
+                                <User className="w-5 h-5 text-cafe-emerald" />
                             </div>
                         </div>
                     </Link>
@@ -139,7 +107,7 @@ const Navbar = () => {
                     className="lg:hidden p-2 rounded-full hover:bg-slate-100 transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    {isOpen ? <X className="w-6 h-6 text-slate-700" /> : <Menu className="w-6 h-6 text-slate-700" />}
                 </button>
             </div>
 
@@ -150,80 +118,56 @@ const Navbar = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className={cn("lg:hidden overflow-hidden border-t", theme.isLittleH ? "bg-bakery-bg border-bakery-accent/20" : "bg-white/95 backdrop-blur-xl border-slate-100")}
+                        className="lg:hidden overflow-hidden border-t bg-white/95 backdrop-blur-xl border-slate-100"
                     >
                         <div className="p-6 flex flex-col gap-4">
-                            {/* Brand Switcher Mobile - Only shown when Little H is active */}
-                            {isLittleHActive && (
-                                <div className="flex p-1 bg-slate-100 rounded-full mb-4">
-                                    <button
-                                        onClick={() => { setBrand('teasntrees'); navigate('/teasntrees'); setIsOpen(false); }}
-                                        className={cn(
-                                            "flex-1 py-2 rounded-full text-sm font-bold transition-all",
-                                            theme.isTeasNTrees ? "bg-white text-cafe-emerald shadow-sm" : "text-slate-500"
-                                        )}
-                                    >
-                                        Teas N Trees
-                                    </button>
-                                    <button
-                                        onClick={() => { setBrand('littleh'); navigate('/littleh'); setIsOpen(false); }}
-                                        className={cn(
-                                            "flex-1 py-2 rounded-full text-sm font-bold transition-all",
-                                            theme.isLittleH ? "bg-white text-pink-500 shadow-sm" : "text-slate-500"
-                                        )}
-                                    >
-                                        Cream N Crust
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Mobile Search Removed */}
-
                             <Link 
-                                to={`/${brand}/menu`} 
+                                to="/menu" 
                                 onMouseEnter={prefetchMenu}
-                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50" 
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-800" 
                                 onClick={() => setIsOpen(false)}
                             >
                                 <Coffee className="w-5 h-5 text-cafe-emerald" />
                                 <span className="font-medium">Menu</span>
                             </Link>
-                            {theme.isTeasNTrees && (
-                                <Link to={`/${brand}/seasonal`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50" onClick={() => setIsOpen(false)}>
-                                    <Sparkles className="w-5 h-5 text-amber-500" />
-                                    <span className="font-medium">Seasonal</span>
-                                </Link>
-                            )}
-                            <Link to={`/${brand}/about`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50" onClick={() => setIsOpen(false)}>
+                            <Link 
+                                to="/seasonal" 
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-800" 
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <Sparkles className="w-5 h-5 text-amber-500" />
+                                <span className="font-medium">Seasonal</span>
+                            </Link>
+                            <Link to="/about" className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-800" onClick={() => setIsOpen(false)}>
                                 <Users className="w-5 h-5 text-blue-500" />
                                 <span className="font-medium">About Us</span>
                             </Link>
-                            <Link to={`/${brand}/gallery`} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group" onClick={() => setIsOpen(false)}>
-                                <ZoomIn className="w-6 h-6 text-purple-500 group-hover:scale-110 transition-transform" />
+                            <Link to="/gallery" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-800" onClick={() => setIsOpen(false)}>
+                                <ZoomIn className="w-6 h-6 text-purple-500" />
                                 <span className="font-semibold text-base">Gallery</span>
                             </Link>
-                            <Link to={`/${brand}/reviews`} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group" onClick={() => setIsOpen(false)}>
-                                <Star className="w-6 h-6 text-yellow-500 group-hover:scale-110 transition-transform" />
+                            <Link to="/reviews" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-800" onClick={() => setIsOpen(false)}>
+                                <Star className="w-6 h-6 text-yellow-500" />
                                 <span className="font-semibold text-base">Reviews</span>
                             </Link>
-                            <Link to={`/${brand}/contact`} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group" onClick={() => setIsOpen(false)}>
-                                <Phone className="w-6 h-6 text-green-500 group-hover:scale-110 transition-transform" />
+                            <Link to="/contact" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-800" onClick={() => setIsOpen(false)}>
+                                <Phone className="w-6 h-6 text-green-500" />
                                 <span className="font-semibold text-base">Contact</span>
                             </Link>
-                            <Link to={`/${brand}/wishlist`} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group" onClick={() => setIsOpen(false)}>
-                                <Heart className="w-6 h-6 text-red-500 group-hover:scale-110 transition-transform" />
+                            <Link to="/wishlist" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-800" onClick={() => setIsOpen(false)}>
+                                <Heart className="w-6 h-6 text-red-500" />
                                 <span className="font-semibold text-base">Wishlist ({wishlistItems.length})</span>
                             </Link>
                             <button
                                 type="button"
                                 onClick={() => { setIsOpen(false); toggleCart(); }}
-                                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group w-full text-left"
+                                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group w-full text-left text-slate-800"
                             >
-                                <ShoppingCart className="w-6 h-6 text-cafe-orange group-hover:scale-110 transition-transform" />
+                                <ShoppingCart className="w-6 h-6 text-cafe-orange" />
                                 <span className="font-semibold text-base">Cart ({cartCount})</span>
                             </button>
-                            <Link to={`/${brand}/profile`} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group" onClick={() => setIsOpen(false)}>
-                                <User className="w-6 h-6 text-cafe-teal group-hover:scale-110 transition-transform" />
+                            <Link to="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-800" onClick={() => setIsOpen(false)}>
+                                <User className="w-6 h-6 text-cafe-teal" />
                                 <span className="font-semibold text-base">Profile</span>
                             </Link>
                         </div>

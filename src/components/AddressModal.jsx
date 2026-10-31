@@ -29,7 +29,7 @@ const defaultCenter = [16.3067, 80.4365]; // Guntur [lat, lng]
 // --- Pure module-level helpers (no component state deps) ---
 
 // Extract building/place name from the first comma-segment of the typed query
-// e.g. "Sai Hostel, Brodipet, Guntur" → "Sai Hostel"
+// e.g. "Sai Hostel, Brodipet, Guntur" â†’ "Sai Hostel"
 const extractPlaceFromQuery = (query) => {
     const firstSegment = query.split(',')[0].trim();
     return firstSegment.length <= 60 ? firstSegment : '';
@@ -43,7 +43,7 @@ const nominatimFetch = async (q) => {
     return res.json();
 };
 
-// MapController — receives target and moves map + pin imperatively
+// MapController â€” receives target and moves map + pin imperatively
 const MapController = ({ target }) => {
     const map = useMap();
     useEffect(() => {
@@ -86,7 +86,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [mapTarget, setMapTarget] = useState(null); // { lat, lng } — drives MapController
+    const [mapTarget, setMapTarget] = useState(null); // { lat, lng } â€” drives MapController
     const searchTimeoutRef = useRef(null);
 
     // Initialize with initialData if editing
@@ -162,7 +162,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
         onClose();
     };
 
-    // Core search logic — wrapped in useCallback so useEffect always calls latest version
+    // Core search logic â€” wrapped in useCallback so useEffect always calls latest version
     const performSearch = useCallback(async (query, silent = false) => {
         if (!query || query.length < 3) return;
         setIsSearching(true);
@@ -209,8 +209,8 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                 return;
             }
 
-            // Fallback — strip place name and retry with area/city
-            // "Sri Sai Hostel, Brodipet, Guntur" → "Brodipet, Guntur" → "Guntur"
+            // Fallback â€” strip place name and retry with area/city
+            // "Sri Sai Hostel, Brodipet, Guntur" â†’ "Brodipet, Guntur" â†’ "Guntur"
             const segments = query.split(',').map(s => s.trim());
             for (let i = 1; i < segments.length; i++) {
                 const fallbackQuery = segments.slice(i).join(', ');
@@ -218,7 +218,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                 data = await nominatimFetch(fallbackQuery);
                 if (data && data.length > 0) {
                     applyResult(data[0], query);
-                    if (!silent) toast.success(`Pinned to "${fallbackQuery}" — verify on the map.`);
+                    if (!silent) toast.success(`Pinned to "${fallbackQuery}" â€” verify on the map.`);
                     return;
                 }
             }
@@ -233,7 +233,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
         }
     }, [setIsSearching, setMapTarget, setNewAddress]);
 
-    // Live search while typing — debounced 700ms, triggers at 4+ characters
+    // Live search while typing â€” debounced 700ms, triggers at 4+ characters
     useEffect(() => {
         if (searchQuery.length < 4) return;
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
@@ -254,7 +254,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
         return parts.join(', ');
     };
 
-    // Called by Enter key or Search button — immediate, with toasts
+    // Called by Enter key or Search button â€” immediate, with toasts
     const handleSearch = () => performSearch(searchQuery.trim(), false);
 
     const handleSearchResultSelect = (result) => {
@@ -422,7 +422,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
             <div className="relative">
                 <div className="relative flex items-center gap-2">
                     <div className="relative flex-1">
-                        <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4", theme.isLittleH ? "text-[#565A47]/40" : "text-slate-400")} />
+                        <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4", "text-slate-400")} />
                         <input
                             type="text"
                             value={searchQuery}
@@ -431,7 +431,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                             placeholder="Search location and press Enter..."
                             className={cn(
                                 "w-full pl-10 pr-4 py-3 rounded-xl border-none focus:ring-2 outline-none text-sm transition-all",
-                                theme.isLittleH ? "bg-[#FDF5EC] focus:ring-[#565A47]/30 text-[#565A47]" : "bg-slate-50 focus:ring-emerald-500/50 text-slate-700"
+                                "bg-slate-50 focus:ring-emerald-500/50 text-slate-700"
                             )}
                         />
                     </div>
@@ -440,7 +440,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                         disabled={isSearching}
                         className={cn(
                             "flex-shrink-0 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5",
-                            theme.isLittleH ? "bg-[#565A47] text-white hover:bg-[#3f4233]" : "bg-emerald-500 text-white hover:bg-emerald-600",
+                            "bg-emerald-500 text-white hover:bg-emerald-600",
                             isSearching && "opacity-60 cursor-not-allowed"
                         )}
                     >
@@ -500,7 +500,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
             {/* Simplified Form */}
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                    <label className={cn("text-[10px] font-bold uppercase tracking-wider", theme.isLittleH ? "text-[#565A47]/50" : "text-slate-400")}>House/Flat No</label>
+                    <label className={cn("text-[10px] font-bold uppercase tracking-wider", "text-slate-400")}>House/Flat No</label>
                     <input
                         type="text"
                         required
@@ -510,16 +510,16 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                             setNewAddress(updated);
                             setSearchQuery(composeSearchQuery(updated));
                         }}
-                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", theme.isLittleH ? "bg-[#FDF5EC]" : "bg-slate-50")}
+                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", "bg-slate-50")}
                         placeholder="e.g. A-101"
                     />
                 </div>
                 <div className="space-y-1">
-                    <label className={cn("text-[10px] font-bold uppercase tracking-wider", theme.isLittleH ? "text-[#565A47]/50" : "text-slate-400")}>Tag</label>
+                    <label className={cn("text-[10px] font-bold uppercase tracking-wider", "text-slate-400")}>Tag</label>
                     <select
                         value={newAddress.tag}
                         onChange={(e) => setNewAddress({ ...newAddress, tag: e.target.value })}
-                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", theme.isLittleH ? "bg-[#FDF5EC]" : "bg-slate-50")}
+                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", "bg-slate-50")}
                     >
                         <option>Home</option>
                         <option>Work</option>
@@ -529,7 +529,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
             </div>
 
             <div className="space-y-1 relative">
-                <label className={cn("text-[10px] font-bold uppercase tracking-wider", theme.isLittleH ? "text-[#565A47]/50" : "text-slate-400")}>Detailed Address</label>
+                <label className={cn("text-[10px] font-bold uppercase tracking-wider", "text-slate-400")}>Detailed Address</label>
                 <div className="relative flex items-center">
                     <input
                         type="text"
@@ -540,7 +540,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                             setNewAddress(updated);
                             setSearchQuery(composeSearchQuery(updated));
                         }}
-                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", theme.isLittleH ? "bg-[#FDF5EC]" : "bg-slate-50")}
+                        className={cn("w-full px-4 py-2.5 rounded-xl border-none text-sm", "bg-slate-50")}
                         placeholder="Street/Colony"
                     />
                     {isSearching && searchQuery === '' && newAddress.street.length > 2 && (
@@ -554,7 +554,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
                 disabled={isSaving}
                 className={cn(
                     "w-full py-4 rounded-xl text-white font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
-                    theme.isLittleH ? "bg-[#565A47] hover:bg-[#3f4233]" : "bg-emerald-500 hover:bg-emerald-600",
+                    "bg-emerald-500 hover:bg-emerald-600",
                     isSaving && "opacity-50"
                 )}
             >
@@ -563,76 +563,6 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId, initialVie
             </button>
         </div>
     );
-
-    // --- BRAND: LITTLE H ---
-    if (theme.isLittleH) {
-        return (
-            <AnimatePresence>
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-lg bg-white shadow-2xl overflow-hidden rounded-[40px]"
-                    >
-                        <div className="p-6 border-b border-[#8B8E7B]/15 flex justify-between items-center bg-[#FAF1E8]">
-                            <div className="flex items-center gap-3">
-                                {view === 'map' && (
-                                    <button onClick={() => setView('list')} className="p-2 hover:bg-[#FDF5EC] rounded-full transition-colors text-[#565A47]">
-                                        <ArrowLeft className="w-5 h-5" />
-                                    </button>
-                                )}
-                                <h2 className="text-xl font-playfair font-bold text-[#565A47]">
-                                    {view === 'list' ? 'Select Address' : 'Add New Address'}
-                                </h2>
-                            </div>
-                            <button onClick={onClose} className="p-2 hover:bg-[#FDF5EC] transition-colors rounded-full">
-                                <X className="w-5 h-5 text-[#565A47]" />
-                            </button>
-                        </div>
-
-                        <div className="p-6 max-h-[75vh] overflow-y-auto bg-white custom-scrollbar">
-                            {view === 'list' ? (
-                                <>
-                                    {loading ? (
-                                        <div className="flex justify-center py-12"><Loader2 className="animate-spin w-8 h-8 text-[#565A47]" /></div>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {addresses.map((addr) => (
-                                                <button
-                                                    key={addr._id}
-                                                    onClick={() => handleSelect(addr)}
-                                                    className={cn(
-                                                        "w-full text-left p-4 border-2 transition-all flex items-start gap-4 group rounded-3xl",
-                                                        selectedAddressId === addr._id ? "border-[#565A47] bg-[#FAF1E8]" : "border-[#8B8E7B]/10 hover:border-[#565A47]/30"
-                                                    )}
-                                                >
-                                                    <div className={cn("w-10 h-10 flex items-center justify-center flex-shrink-0 transition-all rounded-2xl", selectedAddressId === addr._id ? "bg-[#565A47] text-[#FAF1E8]" : "bg-[#FDF5EC] text-[#8B8E7B]")}>
-                                                        {selectedAddressId === addr._id ? <Check className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="font-bold text-[#565A47] text-xs uppercase tracking-widest">{addr.label || "Address"}</p>
-                                                        <p className="text-sm text-[#8B8E7B] font-light leading-relaxed">{addr.addressLine}</p>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                            <button
-                                                onClick={() => setView('map')}
-                                                className="w-full p-4 border-2 border-dashed border-[#8B8E7B]/20 rounded-3xl text-[#565A47] font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#FAF1E8]/50 transition-all"
-                                            >
-                                                <Navigation className="w-4 h-4" /> Add New Address
-                                            </button>
-                                        </div>
-                                    )}
-                                </>
-                            ) : renderMapView()}
-                        </div>
-                    </motion.div>
-                </div>
-            </AnimatePresence>
-        );
-    }
 
     // --- BRAND: TEASNTREES (Default) ---
     return (

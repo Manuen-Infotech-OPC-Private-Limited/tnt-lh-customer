@@ -691,13 +691,13 @@ const ProfilePage = () => {
     // --- RENDER LOGIN VIEW ---
     if (!isAuthenticated) {
         return (
-            <div className={`min-h-screen pt-24 pb-20 flex items-center justify-center p-4 ${theme.isLittleH ? 'bg-bakery-bg' : 'bg-slate-50'}`}>
-                <div className={`rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col relative border ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
+            <div className={`min-h-screen pt-24 pb-20 flex items-center justify-center p-4 bg-slate-50`}>
+                <div className={`rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col relative border bg-white border-slate-100`}>
                     {/* Header */}
-                    <div className={`h-32 ${theme.isLittleH ? 'bg-gradient-to-br from-[#565A47] to-[#8B8E7B]' : 'bg-gradient-to-br from-cafe-emerald to-cafe-teal'} flex items-center justify-center relative overflow-hidden`}>
+                    <div className={`h-32 bg-gradient-to-br from-cafe-emerald to-cafe-teal flex items-center justify-center relative overflow-hidden`}>
                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80')] opacity-10 bg-cover bg-center" />
                         <div className="text-white text-center z-10">
-                            <h2 className={cn("text-2xl font-bold", theme.isLittleH && "font-playfair")}>Welcome Back</h2>
+                            <h2 className={cn("text-2xl font-bold")}>Welcome Back</h2>
                             <p className="text-white/80 text-sm">Sign in to continue</p>
                         </div>
                     </div>
@@ -721,7 +721,7 @@ const ProfilePage = () => {
                                                 value={mobile}
                                                 onChange={e => setMobile(e.target.value)}
                                                 placeholder="9876543210"
-                                                className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/50' : 'bg-slate-50 focus:ring-cafe-emerald/50'} font-medium`}
+                                                className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50 font-medium`}
                                                 required
                                             />
                                         </div>
@@ -730,7 +730,7 @@ const ProfilePage = () => {
                                         disabled={authLoading}
                                         id="send-otp-button"
                                         type="submit"
-                                        className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233] shadow-[#565A47]/30' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2`}
+                                        className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2`}
                                     >
                                         {authLoading ? 'Sending...' : <>Get OTP <ArrowRight className="w-4 h-4" /></>}
                                     </button>
@@ -769,7 +769,7 @@ const ProfilePage = () => {
                                     className="space-y-6"
                                 >
                                     <div className="text-center mb-6">
-                                        <div className={`w-16 h-16 ${theme.isLittleH ? 'bg-[#FDF5EC] text-[#565A47]' : 'bg-emerald-100 text-emerald-600'} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                                        <div className={`w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3`}>
                                             <ShieldCheck className="w-8 h-8" />
                                         </div>
                                         <p className="text-slate-500 text-sm">Enter the OTP sent to <span className="font-bold text-slate-800">{mobile}</span></p>
@@ -781,7 +781,7 @@ const ProfilePage = () => {
                                             value={otp}
                                             onChange={e => setOtp(e.target.value)}
                                             placeholder="XXXXXX"
-                                            className={`w-full text-center text-2xl tracking-widest py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/50' : 'bg-slate-50 focus:ring-cafe-emerald/50'} font-bold`}
+                                            className={`w-full text-center text-2xl tracking-widest py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50 font-bold`}
                                             maxLength={6}
                                             required
                                         />
@@ -789,7 +789,7 @@ const ProfilePage = () => {
                                     <button
                                         disabled={authLoading}
                                         type="submit"
-                                        className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233] shadow-[#565A47]/30' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white rounded-xl font-bold shadow-lg transition-all`}
+                                        className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg transition-all`}
                                     >
                                         {authLoading ? 'Verifying...' : 'Verify & Login'}
                                     </button>
@@ -811,14 +811,14 @@ const ProfilePage = () => {
                                     onSubmit={handleCompleteProfile}
                                     className="space-y-4"
                                 >
-                                    <h3 className={cn("text-xl font-bold text-center text-slate-800 mb-4", theme.isLittleH && "font-playfair")}>Complete Profile</h3>
+                                    <h3 className={cn("text-xl font-bold text-center text-slate-800 mb-4")}>Complete Profile</h3>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-500 uppercase">Full Name</label>
                                         <input
                                             type="text"
                                             value={userDetails.name}
                                             onChange={e => setUserDetails({ ...userDetails, name: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-xl border-none ${theme.isLittleH ? 'bg-white shadow-inner' : 'bg-slate-50'}`}
+                                            className={`w-full px-4 py-3 rounded-xl border-none bg-slate-50`}
                                             required
                                         />
                                     </div>
@@ -828,7 +828,7 @@ const ProfilePage = () => {
                                             type="email"
                                             value={userDetails.email}
                                             onChange={e => setUserDetails({ ...userDetails, email: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-xl border-none ${theme.isLittleH ? 'bg-white shadow-inner' : 'bg-slate-50'}`}
+                                            className={`w-full px-4 py-3 rounded-xl border-none bg-slate-50`}
                                             required
                                         />
                                     </div>
@@ -839,7 +839,7 @@ const ProfilePage = () => {
                                                 type="button"
                                                 onClick={(e) => handleDetectLocation(e, 'details')}
                                                 disabled={detectingLocation}
-                                                className={`text-[10px] font-bold ${theme.isLittleH ? 'text-[#565A47] hover:text-[#3f4233]' : 'text-cafe-emerald hover:text-cafe-teal'} uppercase flex items-center gap-1 transition-colors disabled:opacity-50`}
+                                                className={`text-[10px] font-bold text-cafe-emerald hover:text-cafe-teal uppercase flex items-center gap-1 transition-colors disabled:opacity-50`}
                                             >
                                                 {detectingLocation ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
                                                 Detect My Location
@@ -849,7 +849,7 @@ const ProfilePage = () => {
                                             type="text"
                                             value={userDetails.address}
                                             onChange={e => setUserDetails({ ...userDetails, address: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-xl border-none ${theme.isLittleH ? 'bg-white shadow-inner' : 'bg-slate-50'}`}
+                                            className={`w-full px-4 py-3 rounded-xl border-none bg-slate-50`}
                                             placeholder="Enter your full address"
                                             required
                                         />
@@ -857,7 +857,7 @@ const ProfilePage = () => {
                                     <button
                                         disabled={authLoading}
                                         type="submit"
-                                        className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233] shadow-[#565A47]/30' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white rounded-xl font-bold shadow-lg mt-4 transition-all`}
+                                        className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg mt-4 transition-all`}
                                     >
                                         {authLoading ? 'Creating Account...' : 'Complete & Login'}
                                     </button>
@@ -877,12 +877,12 @@ const ProfilePage = () => {
                                         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600">
                                             <Phone className="w-8 h-8" />
                                         </div>
-                                        <h3 className={cn("text-xl font-bold text-slate-800", theme.isLittleH && "font-playfair")}>One More Step!</h3>
+                                        <h3 className={cn("text-xl font-bold text-slate-800")}>One More Step!</h3>
                                         <p className="text-sm text-slate-500 mt-2">We need your phone number to complete your account</p>
                                     </div>
 
                                     {/* Name - read only from Google */}
-                                    <div className={`space-y-2 p-4 rounded-xl ${theme.isLittleH ? 'bg-[#FDF5EC]' : 'bg-slate-50'}`}>
+                                    <div className={`space-y-2 p-4 rounded-xl bg-slate-50`}>
                                         <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-1">
                                             <span className="text-slate-400">👤</span> Full Name
                                         </label>
@@ -895,7 +895,7 @@ const ProfilePage = () => {
                                     </div>
 
                                     {/* Email - read only from Google */}
-                                    <div className={`space-y-2 p-4 rounded-xl ${theme.isLittleH ? 'bg-[#FDF5EC]' : 'bg-slate-50'}`}>
+                                    <div className={`space-y-2 p-4 rounded-xl bg-slate-50`}>
                                         <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-1">
                                             <span className="text-slate-400">📧</span> Email
                                         </label>
@@ -908,8 +908,8 @@ const ProfilePage = () => {
                                     </div>
 
                                     {/* Phone Number - REQUIRED */}
-                                    <div className={`space-y-2 border-2 ${theme.isLittleH ? 'border-[#565A47]/50 bg-[#FDF5EC]' : 'border-cafe-emerald/50 bg-emerald-50'} p-4 rounded-xl`}>
-                                        <label className={`text-xs font-bold ${theme.isLittleH ? 'text-[#565A47]' : 'text-cafe-emerald'} uppercase flex items-center gap-2`}>
+                                    <div className={`space-y-2 border-2 border-cafe-emerald/50 bg-emerald-50 p-4 rounded-xl`}>
+                                        <label className={`text-xs font-bold text-cafe-emerald uppercase flex items-center gap-2`}>
                                             <Phone className="w-4 h-4" />
                                             Mobile Number <span className="text-red-500">*</span> <span className="text-[10px] font-normal text-red-600 ml-auto">REQUIRED</span>
                                         </label>
@@ -923,7 +923,7 @@ const ProfilePage = () => {
                                                     setMobile(value);
                                                 }}
                                                 placeholder="Enter 10-digit number"
-                                                className={`w-full pl-12 pr-4 py-3 rounded-lg bg-white border-2 transition-colors ${theme.isLittleH ? 'border-[#565A47]/30 focus:border-[#565A47] focus:ring-[#565A47]/20' : 'border-cafe-emerald/30 focus:border-cafe-emerald focus:ring-cafe-emerald/20'} focus:ring-2 font-medium text-base`}
+                                                className={`w-full pl-12 pr-4 py-3 rounded-lg bg-white border-2 transition-colors border-cafe-emerald/30 focus:border-cafe-emerald focus:ring-cafe-emerald/20 focus:ring-2 font-medium text-base`}
                                                 maxLength="10"
                                                 required
                                             />
@@ -941,7 +941,7 @@ const ProfilePage = () => {
                                                 type="button"
                                                 onClick={(e) => handleDetectLocation(e, 'phone-details')}
                                                 disabled={detectingLocation}
-                                                className={`text-[10px] font-bold ${theme.isLittleH ? 'text-[#565A47] hover:text-[#3f4233]' : 'text-cafe-emerald hover:text-cafe-teal'} uppercase flex items-center gap-1 transition-colors disabled:opacity-50`}
+                                                className={`text-[10px] font-bold text-cafe-emerald hover:text-cafe-teal uppercase flex items-center gap-1 transition-colors disabled:opacity-50`}
                                             >
                                                 {detectingLocation ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
                                                 Detect
@@ -951,7 +951,7 @@ const ProfilePage = () => {
                                             type="text"
                                             value={userDetails.address}
                                             onChange={e => setUserDetails({ ...userDetails, address: e.target.value })}
-                                            className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-white shadow-inner focus:ring-[#565A47]/50' : 'bg-slate-50 focus:ring-cafe-emerald/50'}`}
+                                            className={`w-full px-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50`}
                                             placeholder="Enter your full address"
                                             required
                                         />
@@ -960,7 +960,7 @@ const ProfilePage = () => {
                                     <button
                                         disabled={authLoading || !mobile || mobile.length !== 10}
                                         type="submit"
-                                        className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233] shadow-[#565A47]/30' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white rounded-xl font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4`}
+                                        className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4`}
                                     >
                                         {authLoading ? 'Creating Account...' : 'Complete & Login'}
                                     </button>
@@ -1000,12 +1000,12 @@ const ProfilePage = () => {
     ];
 
     return (
-        <div className={`min-h-screen pt-24 pb-20 ${theme.isLittleH ? 'bg-bakery-bg' : 'bg-slate-50'}`}>
+        <div className={`min-h-screen pt-24 pb-20 bg-slate-50`}>
             <div className="container mx-auto px-4 lg:px-8">
 
                 {/* Header Card */}
-                <div className={`rounded-3xl p-8 mb-8 shadow-sm border flex flex-col md:flex-row items-center gap-6 relative overflow-visible ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
-                    <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${theme.isLittleH ? 'from-[#565A47]/10' : 'from-cafe-emerald/10'} to-transparent rounded-bl-full pointer-events-none`} />
+                <div className={`rounded-3xl p-8 mb-8 shadow-sm border flex flex-col md:flex-row items-center gap-6 relative overflow-visible bg-white border-slate-100`}>
+                    <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cafe-emerald/10 to-transparent rounded-bl-full pointer-events-none`} />
 
                     <div className="relative group cursor-pointer">
                         <input
@@ -1066,7 +1066,7 @@ const ProfilePage = () => {
 
                     {/* Sidebar Tabs */}
                     <div className="lg:w-72 flex-shrink-0">
-                        <div className={`rounded-2xl shadow-sm border overflow-hidden sticky top-24 ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
+                        <div className={`rounded-2xl shadow-sm border overflow-hidden sticky top-24 bg-white border-slate-100`}>
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -1074,9 +1074,9 @@ const ProfilePage = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={cn("inline-flex w-full items-center gap-2 px-6 py-4 border-l-4 transition-all duration-300", isActive ? (theme.isLittleH ? "bg-bakery-light border-bakery-primary text-bakery-primary font-semibold shadow-sm" : "bg-cafe-emerald/5 border-cafe-emerald text-cafe-emerald font-semibold") : "border-transparent text-slate-500 hover:bg-slate-50")}
+                                        className={cn("inline-flex w-full items-center gap-2 px-6 py-4 border-l-4 transition-all duration-300", isActive ? "bg-cafe-emerald/5 border-cafe-emerald text-cafe-emerald font-semibold" : "border-transparent text-slate-500 hover:bg-slate-50")}
                                     >
-                                        <Icon className={cn("w-5 h-5", isActive ? (theme.isLittleH ? "text-[#565A47]" : "text-cafe-emerald") : "text-slate-400")} />
+                                        <Icon className={cn("w-5 h-5", isActive ? "text-cafe-emerald" : "text-slate-400")} />
                                         {tab.label}
                                         {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
                                     </button>
@@ -1102,22 +1102,22 @@ const ProfilePage = () => {
                                         {activeTab === 'profile' && (
                                             <div className="space-y-6">
                                                 <div className="flex items-center justify-between mb-8">
-                                                    <h1 className={cn("text-3xl font-black text-slate-800", theme.isLittleH && "font-playfair")}>My Profile</h1>
+                                                    <h1 className={cn("text-3xl font-black text-slate-800")}>My Profile</h1>
                                                 </div>
-                                                <div className={`rounded-3xl p-8 shadow-sm border ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
+                                                <div className={`rounded-3xl p-8 shadow-sm border bg-white border-slate-100`}>
                                                     <h2 className="text-xl font-bold text-slate-800 mb-6">Personal Information</h2>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         <div className="space-y-2">
                                                             <label className="text-sm font-semibold text-slate-600">Full Name</label>
-                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium ${theme.isLittleH ? 'bg-white border-bakery-accent/30 text-bakery-primary' : 'bg-slate-50 border-slate-100 text-slate-800'}`}>{profileData?.name}</div>
+                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium bg-slate-50 border-slate-100 text-slate-800`}>{profileData?.name}</div>
                                                         </div>
                                                         <div className="space-y-2">
                                                             <label className="text-sm font-semibold text-slate-600">Email Address</label>
-                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium ${theme.isLittleH ? 'bg-[#FDF5EC] border-[#8B8E7B]/20 text-[#565A47]' : 'bg-slate-50 border-slate-100 text-slate-800'}`}>{profileData?.email}</div>
+                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium bg-slate-50 border-slate-100 text-slate-800`}>{profileData?.email}</div>
                                                         </div>
                                                         <div className="space-y-2">
                                                             <label className="text-sm font-semibold text-slate-600">Phone Number</label>
-                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium ${theme.isLittleH ? 'bg-[#FDF5EC] border-[#8B8E7B]/20 text-[#565A47]' : 'bg-slate-50 border-slate-100 text-slate-800'}`}>{profileData?.mobile}</div>
+                                                            <div className={`w-full px-4 py-3 rounded-xl border font-medium bg-slate-50 border-slate-100 text-slate-800`}>{profileData?.mobile}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1127,18 +1127,18 @@ const ProfilePage = () => {
                                         {activeTab === 'orders' && (
                                             <div className="space-y-6">
                                                 <div className="flex items-center justify-between mb-8">
-                                                    <h1 className={cn("text-3xl font-black text-slate-800", theme.isLittleH && "font-playfair")}>Order History</h1>
+                                                    <h1 className={cn("text-3xl font-black text-slate-800")}>Order History</h1>
                                                 </div>
                                                 {orders.length === 0 ? (
                                                     <div className="text-center py-20">
-                                                        <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${theme.isLittleH ? 'bg-[#FDF5EC]' : 'bg-slate-50'}`}>
+                                                        <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-slate-50`}>
                                                             <Package className="w-10 h-10 text-slate-300" />
                                                         </div>
                                                         <h3 className="text-lg font-bold text-slate-800 mb-2">No orders yet</h3>
                                                         <p className="text-slate-500 max-w-xs mx-auto">Looks like you haven't placed any orders yet. Start exploring our menu!</p>
                                                     </div>
                                                 ) : orders.map(order => (
-                                                    <div key={order._id} className={`rounded-3xl p-6 shadow-sm border hover:shadow-lg transition-all duration-300 group ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/20 hover:border-bakery-primary/50' : 'bg-white border-slate-100 hover:border-emerald-100'}`}>
+                                                    <div key={order._id} className={`rounded-3xl p-6 shadow-sm border hover:shadow-lg transition-all duration-300 group bg-white border-slate-100 hover:border-emerald-100`}>
 
                                                         {/* Header */}
                                                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-50">
@@ -1153,7 +1153,7 @@ const ProfilePage = () => {
                                                                         </span>
                                                                         <span className={cn(
                                                                             "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                                                                            order.status === 'delivered' ? (theme.isLittleH ? "bg-[#FDF5EC] text-[#565A47] border-[#8B8E7B]/20" : "bg-emerald-50 text-emerald-700 border-emerald-100") :
+                                                                            order.status === 'delivered' ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
                                                                                 order.status === 'cancelled' ? "bg-red-50 text-red-700 border-red-100" :
                                                                                     ['waiting_for_rider', 'pending'].includes(order.status) ? "bg-amber-50 text-amber-700 border-amber-100" :
                                                                                         "bg-blue-50 text-blue-700 border-blue-100"
@@ -1173,7 +1173,7 @@ const ProfilePage = () => {
                                                             <div className="flex gap-2 w-full md:w-auto">
                                                                 {order.status !== 'cancelled' && (
                                                                     <Link
-                                                                        to={`/${brand}/track-order/${order._id}`}
+                                                                        to={`/track-order/${order._id}`}
                                                                         className="flex-1 md:flex-none px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
                                                                     >
                                                                         Track Order <ArrowRight className="w-4 h-4" />
@@ -1183,7 +1183,7 @@ const ProfilePage = () => {
                                                         </div>
 
                                                         {/* Items Preview */}
-                                                        <div className={`mb-6 rounded-2xl p-4 space-y-3 ${theme.isLittleH ? 'bg-[#FDF5EC]' : 'bg-slate-50'}`}>
+                                                        <div className={`mb-6 rounded-2xl p-4 space-y-3 bg-slate-50`}>
                                                             {order.items?.slice(0, 3).map((item, idx) => (
                                                                 <div key={idx} className="flex justify-between items-center text-sm">
                                                                     <div className="flex items-center gap-3">
@@ -1238,7 +1238,7 @@ const ProfilePage = () => {
 
                                                                 <button
                                                                     onClick={() => handleReorder(order._id)}
-                                                                    className={`flex-1 md:flex-none py-2.5 px-4 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 ${theme.isLittleH ? 'bg-[#FDF5EC] text-[#565A47] hover:bg-[#8B8E7B]/20' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                                                                    className={`flex-1 md:flex-none py-2.5 px-4 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100`}
                                                                 >
                                                                     <RotateCcw className="w-4 h-4" /> Reorder
                                                                 </button>
@@ -1265,17 +1265,17 @@ const ProfilePage = () => {
                                         {activeTab === 'addresses' && (
                                             <div className="space-y-6">
                                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                                                    <h1 className={cn("text-3xl font-black text-slate-800", theme.isLittleH && "font-playfair")}>Saved Addresses</h1>
+                                                    <h1 className={cn("text-3xl font-black text-slate-800")}>Saved Addresses</h1>
                                                     <button
                                                         onClick={handleAddAddressClick}
-                                                        className={cn("px-6 py-3 font-bold shadow-lg transition-all flex items-center justify-center gap-2", theme.isLittleH ? "bg-[#565A47] text-[#FAF1E8] hover:bg-[#3f4233]" : "bg-cafe-emerald text-white hover:bg-cafe-teal rounded-xl")}
+                                                        className="px-6 py-3 font-bold shadow-lg transition-all flex items-center justify-center gap-2 bg-cafe-emerald text-white hover:bg-cafe-teal rounded-xl"
                                                     >
                                                         <Plus className="w-5 h-5" /> Add Address
                                                     </button>
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     {addresses.map(addr => (
-                                                        <div key={addr._id} className={`rounded-2xl p-6 shadow-sm border-2 transition-all relative group ${theme.isLittleH ? 'bg-bakery-light border-transparent hover:border-[#565A47]' : 'bg-white border-transparent hover:border-cafe-emerald'}`}>
+                                                        <div key={addr._id} className={`rounded-2xl p-6 shadow-sm border-2 transition-all relative group bg-white border-transparent hover:border-cafe-emerald`}>
                                                             <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                 {!addr.isDefault && (
                                                                     <button
@@ -1288,7 +1288,7 @@ const ProfilePage = () => {
                                                                 )}
                                                                 <button
                                                                     onClick={() => handleEditAddress(addr)}
-                                                                    className={`p-2 bg-slate-100 text-slate-600 rounded-lg hover:text-white transition-colors ${theme.isLittleH ? 'hover:bg-[#565A47]' : 'hover:bg-cafe-emerald'}`}
+                                                                    className={`p-2 bg-slate-100 text-slate-600 rounded-lg hover:text-white transition-colors hover:bg-cafe-emerald`}
                                                                 >
                                                                     <Edit2 className="w-4 h-4" />
                                                                 </button>
@@ -1302,7 +1302,7 @@ const ProfilePage = () => {
                                                             <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
                                                                 {addr.label || addr.tag || 'Home'}
                                                                 {addr.isDefault && (
-                                                                    <span className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${theme.isLittleH ? 'bg-[#FDF5EC] text-[#565A47]' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                                    <span className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-emerald-100 text-emerald-700`}>
                                                                         <Star className="w-3 h-3 fill-current" /> Default
                                                                     </span>
                                                                 )}
@@ -1315,7 +1315,7 @@ const ProfilePage = () => {
 
                                                     <button
                                                         onClick={handleAddAddressClick}
-                                                        className={`border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-400 transition-all group min-h-[160px] ${theme.isLittleH ? 'hover:border-[#565A47] hover:text-[#565A47] hover:bg-[#565A47]/5' : 'hover:border-cafe-emerald hover:text-cafe-emerald hover:bg-cafe-emerald/5'}`}
+                                                        className={`border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-400 transition-all group min-h-[160px] hover:border-cafe-emerald hover:text-cafe-emerald hover:bg-cafe-emerald/5`}
                                                     >
                                                         <div className="w-12 h-12 rounded-full bg-slate-50 group-hover:bg-white flex items-center justify-center mb-3 transition-colors">
                                                             <Plus className="w-6 h-6" />
@@ -1329,7 +1329,7 @@ const ProfilePage = () => {
                                         {activeTab === 'reviews' && (
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between mb-8">
-                                                    <h1 className={cn("text-3xl font-black text-slate-800", theme.isLittleH && "font-playfair")}>My Reviews</h1>
+                                                    <h1 className={cn("text-3xl font-black text-slate-800")}>My Reviews</h1>
                                                 </div>
                                                 {!Array.isArray(reviews) || reviews.length === 0 ? (
                                                     <div className="text-center py-12 text-slate-400">No reviews found.</div>
@@ -1340,7 +1340,7 @@ const ProfilePage = () => {
                                                         : (review.type === 'site' || !review.orderId) ? "General Cafe Experience" : `Order #${review.orderId?.orderNumber || (typeof review.orderId === 'string' ? review.orderId : 'Unknown')}`;
 
                                                     return (
-                                                        <div key={review._id} className={`rounded-2xl p-6 shadow-sm border ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
+                                                        <div key={review._id} className={`rounded-2xl p-6 shadow-sm border bg-white border-slate-100`}>
                                                             <div className="flex items-start justify-between mb-4">
                                                                 <div>
                                                                     <h3 className="font-bold text-slate-800 text-lg">
@@ -1376,7 +1376,7 @@ const ProfilePage = () => {
                                                                                             key={`rider-${i}`}
                                                                                             className={cn(
                                                                                                 "w-3.5 h-3.5",
-                                                                                                i < review.riderRating ? (theme.isLittleH ? "fill-[#565A47] text-[#565A47]" : "fill-emerald-400 text-emerald-400") : "text-slate-200"
+                                                                                                i < review.riderRating ? "fill-emerald-400 text-emerald-400" : "text-slate-200"
                                                                                             )}
                                                                                         />
                                                                                     ))}
@@ -1428,10 +1428,10 @@ const ProfilePage = () => {
                                                         initial={{ opacity: 0, scale: 0.95 }}
                                                         animate={{ opacity: 1, scale: 1 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
-                                                        className={cn("w-full max-w-md overflow-hidden shadow-2xl", theme.isLittleH ? "bg-white" : "bg-white rounded-3xl")}
+                                                        className="w-full max-w-md overflow-hidden shadow-2xl bg-white rounded-3xl"
                                                     >
-                                                        <div className={cn("p-6 border-b flex items-center justify-between", theme.isLittleH ? "bg-[#FAF1E8] border-[#8B8E7B]/15" : "bg-slate-50 border-slate-100")}>
-                                                            <h3 className={cn("text-xl font-bold text-slate-800", theme.isLittleH && "font-playfair text-[#565A47]")}>Edit Profile</h3>
+                                                        <div className="p-6 border-b flex items-center justify-between bg-slate-50 border-slate-100">
+                                                            <h3 className={cn("text-xl font-bold text-slate-800")}>Edit Profile</h3>
                                                             <button onClick={() => setShowEditProfileModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                                                                 <X className="w-5 h-5 text-slate-400" />
                                                             </button>
@@ -1446,7 +1446,7 @@ const ProfilePage = () => {
                                                                         type="text"
                                                                         value={editForm.name}
                                                                         onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                                                                        className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'} font-medium`}
+                                                                        className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50 font-medium`}
                                                                         placeholder="Your Name"
                                                                     />
                                                                 </div>
@@ -1460,7 +1460,7 @@ const ProfilePage = () => {
                                                                         type="email"
                                                                         value={editForm.email}
                                                                         onChange={e => setEditForm({ ...editForm, email: e.target.value })}
-                                                                        className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 ${theme.isLittleH ? 'bg-[#FDF5EC] focus:ring-[#565A47]/30' : 'bg-slate-50 focus:ring-cafe-emerald/50'} font-medium`}
+                                                                        className={`w-full pl-12 pr-4 py-3 rounded-xl border-none focus:ring-2 bg-slate-50 focus:ring-cafe-emerald/50 font-medium`}
                                                                         placeholder="your.email@example.com"
                                                                     />
                                                                 </div>
@@ -1481,7 +1481,7 @@ const ProfilePage = () => {
 
                                                             <button
                                                                 onClick={handleSaveProfile}
-                                                                className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233]' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white ${theme.isLittleH ? '' : 'rounded-xl'} font-bold shadow-lg transition-all flex items-center justify-center gap-2 mt-4`}
+                                                                className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 mt-4`}
                                                             >
                                                                 <Save className="w-4 h-4" /> Save Changes
                                                             </button>
@@ -1508,8 +1508,8 @@ const ProfilePage = () => {
 
 
                         {activeTab === 'settings' && (
-                            <div className={`rounded-3xl p-8 shadow-sm border ${theme.isLittleH ? 'bg-bakery-light border-bakery-accent/30' : 'bg-white border-slate-100'}`}>
-                                <h2 className={cn("text-xl font-bold text-slate-800 mb-6", theme.isLittleH && "font-playfair")}>Preferences</h2>
+                            <div className={`rounded-3xl p-8 shadow-sm border bg-white border-slate-100`}>
+                                <h2 className={cn("text-xl font-bold text-slate-800 mb-6")}>Preferences</h2>
 
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
@@ -1526,7 +1526,7 @@ const ProfilePage = () => {
                                             onClick={() => toggleNotification('email')}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors",
-                                                profileData?.notificationPreferences?.email ? (theme.isLittleH ? "bg-[#565A47]" : "bg-cafe-emerald") : "bg-slate-300"
+                                                profileData?.notificationPreferences?.email ? "bg-cafe-emerald" : "bg-slate-300"
                                             )}
                                         >
                                             <div className={cn(
@@ -1550,7 +1550,7 @@ const ProfilePage = () => {
                                             onClick={() => toggleNotification('sms')}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors",
-                                                profileData?.notificationPreferences?.sms ? (theme.isLittleH ? "bg-[#565A47]" : "bg-cafe-emerald") : "bg-slate-300"
+                                                profileData?.notificationPreferences?.sms ? "bg-cafe-emerald" : "bg-slate-300"
                                             )}
                                         >
                                             <div className={cn(
@@ -1574,7 +1574,7 @@ const ProfilePage = () => {
                                             onClick={() => toggleNotification('push')}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors",
-                                                profileData?.notificationPreferences?.push ? (theme.isLittleH ? "bg-[#565A47]" : "bg-cafe-emerald") : "bg-slate-300"
+                                                profileData?.notificationPreferences?.push ? "bg-cafe-emerald" : "bg-slate-300"
                                             )}
                                         >
                                             <div className={cn(
@@ -1598,7 +1598,7 @@ const ProfilePage = () => {
                                             onClick={() => toggleNotification('offers')}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors",
-                                                profileData?.notificationPreferences?.offers ? (theme.isLittleH ? "bg-[#565A47]" : "bg-cafe-emerald") : "bg-slate-300"
+                                                profileData?.notificationPreferences?.offers ? "bg-cafe-emerald" : "bg-slate-300"
                                             )}
                                         >
                                             <div className={cn(
@@ -1626,9 +1626,9 @@ const ProfilePage = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className={cn("w-full max-w-lg overflow-hidden shadow-2xl", theme.isLittleH ? "bg-white" : "bg-white rounded-3xl")}
+                className="w-full max-w-lg overflow-hidden shadow-2xl bg-white rounded-3xl"
             >
-                <div className={cn("p-6 border-b flex items-center justify-between", theme.isLittleH ? "bg-[#FDF5EC] border-[#8B8E7B]/20" : "bg-slate-50 border-slate-100")}>
+                <div className="p-6 border-b flex items-center justify-between bg-slate-50 border-slate-100">
                     <h3 className="text-xl font-bold text-slate-800">Rate your experience</h3>
                     <button
                         onClick={() => setShowReviewModal(false)}
@@ -1678,7 +1678,7 @@ const ProfilePage = () => {
                                         className={cn(
                                             "w-8 h-8 transition-colors",
                                             star <= reviewForm.riderRating
-                                                ? (theme.isLittleH ? "fill-[#565A47] text-[#565A47]" : "fill-emerald-400 text-emerald-400")
+                                                ? "fill-emerald-400 text-emerald-400"
                                                 : "text-slate-200"
                                         )}
                                     />
@@ -1693,14 +1693,14 @@ const ProfilePage = () => {
                             value={reviewForm.comment}
                             onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                             placeholder="Tell us what you liked..."
-                            className={`w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 ${theme.isLittleH ? 'focus:ring-[#565A47]/50' : 'focus:ring-cafe-emerald/50'} min-h-[100px] resize-none`}
+                            className={`w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-cafe-emerald/50 min-h-[100px] resize-none`}
                         />
                     </div>
 
                     <button
                         disabled={submittingReview}
                         type="submit"
-                        className={`w-full py-3.5 ${theme.isLittleH ? 'bg-[#565A47] hover:bg-[#3f4233] shadow-[#565A47]/30' : 'bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30'} text-white rounded-xl font-bold shadow-lg transition-all`}
+                        className={`w-full py-3.5 bg-cafe-emerald hover:bg-cafe-teal shadow-cafe-emerald/30 text-white rounded-xl font-bold shadow-lg transition-all`}
                     >
                         {submittingReview ? 'Submitting...' : 'Submit Review'}
                     </button>
